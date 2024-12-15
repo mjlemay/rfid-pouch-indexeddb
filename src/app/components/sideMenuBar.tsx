@@ -9,25 +9,26 @@ import IconButton from './iconButton';
 
 interface SideMenuBarProps {
     children?: React.ReactNode;
+    selected?: string;
     screenActionHandler: (arg0: string) => void;
   }
   
   export default function SideMenuBar(props:SideMenuBarProps):JSX.Element {
-    const { children, screenActionHandler} = props;
+    const { children, screenActionHandler, selected} = props;
   
     return (
       <div className={`h-screen min-h-screen w-[75px] bg-black`}>
         <div className="min-w-[50px] min-h-[50px]"></div>
-        <IconButton handleAction={()=> screenActionHandler('ids')}>
+        <IconButton selected={selected === 'ids'} handleAction={()=> screenActionHandler('ids')}>
             <AvatarIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
-        <IconButton handleAction={()=> screenActionHandler('logs')}>
+        <IconButton selected={selected === 'logs'} handleAction={()=> screenActionHandler('logs')}>
             <ActivityLogIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
-        <IconButton handleAction={()=> screenActionHandler('inputs')}>
+        <IconButton selected={selected === 'inputs'} handleAction={()=> screenActionHandler('inputs')}>
             <InputIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
-        <IconButton handleAction={()=> screenActionHandler('settings')}>
+        <IconButton selected={selected === 'settings'} handleAction={()=> screenActionHandler('settings')}>
             <GearIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
         {children}
