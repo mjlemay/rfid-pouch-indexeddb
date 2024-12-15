@@ -1,11 +1,16 @@
 import React, { JSX, useEffect } from 'react';
 import { useFind } from 'use-pouchdb';
-import DataTable, { createTheme } from 'react-data-table-component';
+import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
 
 interface LogsViewProps {
-    children?: React.ReactNode;
-    actionHandler?: (arg0: string) => void;
-  }
+  children?: React.ReactNode;
+  actionHandler?: (arg0: string) => void;
+}
+
+interface DataRow {
+  date?: string;
+  scanId?: string;
+}
 
 createTheme('dark', {
   text: {
@@ -43,23 +48,28 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
     fields: ['scanId', 'date'],
   })
 
-  const sortbyDate = (a:string, b:string) => {
-    return new Date(b.date) - new Date(a.date);
+  const dateSort = (a:DataRow, b:DataRow) => {
+    console.log(a, b);
+    const aDate = a.date || '';
+    const bDate = b.date || '';
+    return new Date(aDate).getTime() - new Date(bDate).getTime();
   }
 
-  const columns = [{
-    name: 'scanId',
-    selector: (row:any) => row.scanId,
-    sortable: true,
-  },
-  {
-    name: 'Date',
-    selector: (row:any) => row.date,
-    sortable: true,
-    sortFunction: sortbyDate,
-    format: (row:any) => new Date(row.date).toLocaleString(),
-    grow: 12,
-  }];
+  const columns: TableColumn<DataRow>[] = [
+    {
+      name: 'scanId',
+      selector: row => row.scanId || '',
+      sortable: true,
+    },
+    {
+      name: 'Date',
+      selector: row => row.date || '',
+      sortFunction: dateSort,
+      sortable: true,
+      format: row => row.date && new Date(row.date).toLocaleString(),
+      grow: 12,
+    }
+  ];
 
   useEffect(()=>{
     if (docs) {
@@ -76,8 +86,9 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       <DataTable
         title="Scan Logs"
         columns={columns}
-        data={docs}
+        data={docs as unknown as DataRow[]}
         keyField="date"
+        defaultSortAsc={true}
         defaultSortFieldId="date"
         theme="dark"
       />
