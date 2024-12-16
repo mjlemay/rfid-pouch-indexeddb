@@ -1,6 +1,8 @@
-import React, { JSX, useEffect } from 'react';
+import React, { JSX } from 'react';
 import { useFind } from 'use-pouchdb';
 import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
+
+const LOG_LIMIT = 1000;
 
 interface LogsViewProps {
   children?: React.ReactNode;
@@ -46,13 +48,13 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       type: 'scan',
     },
     fields: ['scanId', 'date'],
+    limit: LOG_LIMIT,
   })
 
   const dateSort = (a:DataRow, b:DataRow) => {
-    console.log(a, b);
-    const aDate = a.date || '';
-    const bDate = b.date || '';
-    return new Date(aDate).getTime() - new Date(bDate).getTime();
+    const aDate = new Date (a.date || '');
+    const bDate = new Date(b.date || '');
+    return aDate.getTime() - bDate.getTime();
   }
 
   const columns: TableColumn<DataRow>[] = [
@@ -68,18 +70,12 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       sortable: true,
       format: row => row.date && new Date(row.date).toLocaleString(),
       grow: 12,
+      right: true,
     }
   ];
-
-  useEffect(()=>{
-    if (docs) {
-      console.log(docs);
-    }
-  },[docs])
-
   
   return (
-    <div className=''
+    <div className="h-full p-10"
     >
       {error && JSON.stringify(error)}
       {loading && docs.length === 0 && <p>loading...</p>}
@@ -88,9 +84,9 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
         columns={columns}
         data={docs as unknown as DataRow[]}
         keyField="date"
-        defaultSortAsc={true}
         defaultSortFieldId="date"
         theme="dark"
+        pagination
       />
       {children}
     </div>

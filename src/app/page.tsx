@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import SideMenuBar from './components/sideMenuBar';
@@ -13,6 +13,7 @@ export default function Home() {
   const addScanRecord = useAddScanRecord();
   const rifdNumber = useRFIDNumber();
   const [ view, setView ] = useState('log');
+  const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
   
 
@@ -25,7 +26,9 @@ export default function Home() {
   useEffect(() => {
     if (rifdNumber !== '' && !logging) {
       setLogging(true);
+      setSelectedId(rifdNumber);
       addScanRecord(rifdNumber);
+      setView('ids');
     }
     if (logging && rifdNumber === '') {
       setLogging(false);
@@ -39,7 +42,7 @@ export default function Home() {
     >
       <SideMenuBar selected={view} screenActionHandler={handleAction}  />
       <div className={`flex flex-1 items-center justify-center`}>
-        {view == 'ids' && <IdsView actionHandler={handleAction} />}
+        {view == 'ids' && <IdsView actionHandler={handleAction} selectedId={selectedId} />}
         {view == 'logs' && <LogsView actionHandler={handleAction} />}
         {view == 'inputs' && <InputsView actionHandler={handleAction} />}
         {view == 'settings' && <SettingsView actionHandler={handleAction} />}
