@@ -1,18 +1,34 @@
 import React, { JSX } from 'react';
+import FormViewer from './formViewer';
+import { formField } from "../../utils/types";
 
 interface SettingsViewProps {
-    children?: React.ReactNode;
-    actionHandler?: (arg0: string) => void;
-  }
+  children?: React.ReactNode;
+  settingsDoc: PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
+  actionHandler?: (arg0: unknown) => void;
+}
+
+const settings:formField[] = [
+
+]
+
   
-  export default function SettingsView(props:SettingsViewProps):JSX.Element {
-    const { children } = props;
-  
-    return (
-      <div className='cursor-pointer min-w-[40px] min-h-[40px] hover:bg-neutral-800 rounded-lg m-1 p-2 flex justify-center items-center '
-      >
-        <h1>Settings</h1>
+export default function SettingsView(props:SettingsViewProps):JSX.Element {
+  const { children, settingsDoc } = props;
+
+  const handleRecordUpdate = () => {};
+
+  return (
+    <div className="flex flex-col h-full w-full">
+      <div className="grow p-4 m-10">
+        <h1 className="font-medium text-4xl">Settings</h1>
+        <FormViewer
+          fields={settings}
+          formDoc={settingsDoc}
+          formActionHandler={handleRecordUpdate}
+        />
         {children}
       </div>
-    )
-  }
+    </div>
+  )
+}

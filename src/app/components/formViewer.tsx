@@ -1,26 +1,16 @@
 import React, { JSX, useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
+import { formField } from "../../utils/types";
 
 interface FormViewerProps {
     children?: React.ReactNode;
-    docId?: string;
-    formSchema?: {[key:string]:string};
-    formActionHandler?: (arg0: string, arg1: object) => void;
-}
-
-type formFieldOptions = {
-    name: string;
-}
-
-type formField ={
-    name: string;
-    inputType: string;
-    fieldType: string;
-    options?: formFieldOptions[];
+    formDoc?: PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
+    formActionHandler?: (arg0: { [key: string]: string }) => void;
+    fields?: formField[]; 
 }
   
 export default function FormViewer(props:FormViewerProps):JSX.Element {
-    const { children, docId = '', formActionHandler, formSchema = {}} = props;
+    const { children, formActionHandler, formDoc = {}} = props;
     const [ formdata, setFormData ] = useState({});
     const templateFields:formField[] = [{name: "notes", inputType: "text", fieldType: "textarea" }];
 
@@ -72,16 +62,16 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         event.preventDefault();
         if (formActionHandler) {
             const payload = formdata || {};
-            formActionHandler(docId, payload);
+            formActionHandler(payload);
         }
         return false;
     }
 
     useEffect(()=>{
-        if (formSchema) {
-            setFormData(formSchema);
+        if (formDoc) {
+            setFormData(formDoc);
         }
-    },[formSchema])
+    },[formDoc])
 
     return (
         <div className="">

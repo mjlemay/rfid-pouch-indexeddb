@@ -6,7 +6,7 @@ import FormViewer from './formViewer';
 
 interface IdsViewProps {
     children?: React.ReactNode;
-    actionHandler?: (arg0: string) => void;
+    actionHandler?: (arg0: unknown) => void;
     selectedId: string;
   }
   
@@ -17,8 +17,8 @@ interface IdsViewProps {
     const hasSelectedId = selectedId !== '';
     const { doc, loading, state, error } = useDoc(selectedId);
 
-    const handleRecordUpdate = (recordId:string, payload:object) => {
-      addUpdateRecordData(recordId, payload);
+    const handleRecordUpdate = (payload:{ [key: string]: string }) => {
+      addUpdateRecordData(payload);
     }
 
     useEffect(()=>{
@@ -27,13 +27,14 @@ interface IdsViewProps {
         console.log('err', state, error);
         if (errorString.includes('404')) {
           // create a new record if one does not exist
-          addUpdateRecordData(selectedId, {});
+          addUpdateRecordData({_id: selectedId});
         }
       }
     },[addUpdateRecordData, error, selectedId, state]);
 
     useEffect(()=>{
-    },[])
+      console.log('selectedId', selectedId);
+    },[selectedId])
   
     return (
       <div className='flex flex-col h-full w-full'
@@ -42,7 +43,7 @@ interface IdsViewProps {
           {!loading && doc && (
             <>
             <h1>Details for {doc._id}</h1>
-              <FormViewer formSchema={doc} docId={doc._id} formActionHandler={handleRecordUpdate} />
+              <FormViewer formDoc={doc} formActionHandler={handleRecordUpdate} />
             </>
           )}
           {!hasSelectedId && (

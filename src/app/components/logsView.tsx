@@ -75,20 +75,22 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
   ];
   
   return (
-    <div className="h-full p-10"
-    >
-      {error && JSON.stringify(error)}
-      {loading && docs.length === 0 && <p>loading...</p>}
-      <DataTable
-        title="Scan Logs"
-        columns={columns}
-        data={docs as unknown as DataRow[]}
-        keyField="date"
-        defaultSortFieldId="date"
-        theme="dark"
-        pagination
-      />
-      {children}
+    <div className="flex flex-col h-full w-full">
+      <div className="grow p-4 m-10">
+        {error && JSON.stringify(error)}
+        {loading && docs.length === 0 && <p>loading...</p>}
+        
+        <h1 className="font-medium text-4xl">Scan Logs</h1>
+        <DataTable
+          columns={columns}
+          data={docs as unknown as DataRow[]}
+          keyField="date"
+          defaultSortFieldId="date"
+          theme="dark"
+          pagination
+        />
+        {children}
+      </div>
     </div>
   )
 }

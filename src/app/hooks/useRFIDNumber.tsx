@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 
 const WAIT = 300;
-const CPS_MIN = 5;
-const CPS_MAX = 28;
+const CPS_MIN = 3;
+const CPS_MAX = 30;
 const ID_LENGTH = 8;
 
 export function useRFIDNumber() {

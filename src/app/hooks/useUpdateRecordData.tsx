@@ -5,10 +5,9 @@ export function useAddUpdateRecordData() {
   const db = usePouch();
 
   return useCallback(
-    async (scanId:string, payload:object) => {
-        const lastDoc = await db.get(scanId);
+    async ( payload:{ [key: string]: string }) => {
+        const lastDoc = await db.get(payload._id);
         const doc = { 
-            _id: scanId,
             _rev: lastDoc._rev,
             ...payload
         };
