@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useEffect } from 'react';
 import { useFind } from 'use-pouchdb';
 import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
 
@@ -40,7 +40,6 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
   const { children } = props;
   
   const { docs, loading, error } = useFind({
-    // Ensure that this index exist, create it if not. And use it.
     index: {
       fields: ['type'],
     },
@@ -73,22 +72,26 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       right: true,
     }
   ];
+
+  useEffect(() =>{
+    console.log('error', error)
+  },[error])
+
   
   return (
     <div className="flex flex-col h-full w-full">
       <div className="grow p-4 m-10">
-        {error && JSON.stringify(error)}
-        {loading && docs.length === 0 && <p>loading...</p>}
         
         <h1 className="font-medium text-4xl">Scan Logs</h1>
-        <DataTable
+        {loading && docs.length === 0 && <p>loading...</p>}
+        {docs.length >= 1 && (<DataTable
           columns={columns}
           data={docs as unknown as DataRow[]}
           keyField="date"
           defaultSortFieldId="date"
           theme="dark"
           pagination
-        />
+        />)}
         {children}
       </div>
     </div>

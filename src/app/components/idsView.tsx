@@ -6,9 +6,11 @@ import FormViewer from './formViewer';
 
 interface IdsViewProps {
     children?: React.ReactNode;
-    actionHandler?: (arg0: unknown) => void;
+    actionHandler?: (arg0: string) => void;
     selectedId: string;
   }
+
+  const defaultFields = [{name: "notes", inputType: "text", fieldType: "textarea" }]
   
   export default function IdsView(props:IdsViewProps):JSX.Element {
     const { children, selectedId = '' } = props;
@@ -43,7 +45,7 @@ interface IdsViewProps {
           {!loading && doc && (
             <>
             <h1>Details for {doc._id}</h1>
-              <FormViewer formDoc={doc} formActionHandler={handleRecordUpdate} />
+              <FormViewer formDoc={doc} fields={defaultFields} formActionHandler={handleRecordUpdate} />
             </>
           )}
           {!hasSelectedId && (

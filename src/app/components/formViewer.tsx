@@ -10,9 +10,9 @@ interface FormViewerProps {
 }
   
 export default function FormViewer(props:FormViewerProps):JSX.Element {
-    const { children, formActionHandler, formDoc = {}} = props;
+    const { children, formActionHandler, fields, formDoc = {}} = props;
     const [ formdata, setFormData ] = useState({});
-    const templateFields:formField[] = [{name: "notes", inputType: "text", fieldType: "textarea" }];
+    const templateFields:formField[] = fields || [];
 
     const fieldChangeHandler = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { value, name } = event.target;
@@ -29,7 +29,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     }
 
     const inputField = (fieldItem:formField) => {
-        const { name, inputType, fieldType } = fieldItem;
+        const { name, inputType, fieldType, caption } = fieldItem;
         let element = <></>;
         switch(fieldType) {
             case 'textarea':
@@ -54,6 +54,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 <Form.Control asChild className="text-black">
                     {element}
                 </Form.Control>
+                {caption && (<Form.Message>{caption}</Form.Message>)}
             </Form.Field>
         )
     }
