@@ -21,6 +21,7 @@ export function useAddUpdateRecordData() {
         const _rev = lastDoc._rev;
         const doc = { 
             _rev,
+            type: 'record',
             ...payload
         };
         const update = async () => {

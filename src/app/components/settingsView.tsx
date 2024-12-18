@@ -37,7 +37,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
         <FormViewer
           fields={settings}
           formDoc={settingsDoc}
-          formActionHandler={handleRecordUpdate}
+          formActionHandler={() => handleRecordUpdate}
         />
         {children}
       </div>

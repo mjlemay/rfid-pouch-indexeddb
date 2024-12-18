@@ -33,28 +33,50 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         let element = <></>;
         switch(fieldType) {
             case 'textarea':
-                element = <textarea name={name} value={fieldValue(name)} onChange={(event) => fieldChangeHandler(event)} className="textArea" />;
+                element = <textarea 
+                    name={name}
+                    rows={4}
+                    value={fieldValue(name)} 
+                    onChange={(event) => fieldChangeHandler(event)}
+                    className="block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />;
                 break;
             case 'input':
             default:
-                element = <input name={name} value={fieldValue(name)} onChange={(event) => fieldChangeHandler(event)} className="Input" type={inputType} />;
+                element = <input 
+                    name={name}
+                    value={fieldValue(name)}
+                    onChange={(event) => fieldChangeHandler(event)}
+                    className="bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5"
+                    type={inputType}
+                    />;
                 break;
         }
         return (
-            <Form.Field className="FormField" name={name} key={`field_${name}`}>
+            <Form.Field 
+                className="pt-4 flex flex-row justify-items-start content-center gap-4"
+                name={name}
+                key={`field_${name}`}
+            >
                 <div
+                    className="self-center w-40 min-w-36"
                     style={{
                         display: `${inputType === 'hidden' ? 'none' : 'flex'}`,
                         alignItems: "baseline",
                         justifyContent: "space-between",
                     }}
                 >
-                    <Form.Label className="FormLabel">{name}</Form.Label>
+                    <Form.Label className="text-xl font-bold">{name}</Form.Label>
                 </div>
-                <Form.Control asChild className="text-black">
-                    {element}
-                </Form.Control>
-                {caption && (<Form.Message>{caption}</Form.Message>)}
+                <div className={`self-center ${fieldType === 'textarea' && 'grow'}`}>
+                    <Form.Control asChild className="text-black text-lg">
+                        {element}
+                    </Form.Control>
+                </div>
+                {caption && (<div className="self-center text-sm font-thin max-w-80">
+                    {caption && (<Form.Message>{caption}</Form.Message>)}
+                </div>
+                )}
             </Form.Field>
         )
     }
@@ -72,20 +94,23 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         if (formDoc) {
             setFormData(formDoc);
         }
-    },[formDoc])
+    },[])
 
     return (
         <div className="">
-        <div className=""></div>
-        <Form.Root className="FormRoot">
-        {templateFields.map((fieldItem:formField) => {
-            return inputField(fieldItem)
-        })}
-            <Form.Submit asChild>
-                <button onClick={(event:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>submitForm(event)}>Update</button>
-            </Form.Submit>
-        </Form.Root>
-        {children}
+            <Form.Root className="FormRoot">
+            {templateFields.map((fieldItem:formField) => {
+                return inputField(fieldItem)
+            })}
+                <div className="p-4 w-full flex justify-center">
+                    <Form.Submit asChild>
+                        <button 
+                        className="bg-neutral-500 border border-neutral-600 text-neutral-100 text-xl rounded-lg block w-80 p-2.5"
+                        onClick={(event:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>submitForm(event)}>Update</button>
+                    </Form.Submit>
+                </div>
+            </Form.Root>
+            {children}
         </div>
     )
 }
