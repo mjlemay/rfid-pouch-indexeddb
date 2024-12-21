@@ -8,5 +8,8 @@ export type formField = {
     inputType: string;
     fieldType: string;
     caption?: string;
+    tailwind?: string;
     options?: formFieldOptions[];
 }
+
+export type pouchDoc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;

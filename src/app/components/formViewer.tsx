@@ -5,13 +5,14 @@ import { formField } from "../../utils/types";
 interface FormViewerProps {
     children?: React.ReactNode;
     formDoc?: PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
-    formActionHandler?: (arg0: { [key: string]: string }) => void;
+    formActionHandler?: (arg0: { [key: string]: string }, arg1: (arg0:boolean) => void) => void;
     fields?: formField[]; 
 }
   
 export default function FormViewer(props:FormViewerProps):JSX.Element {
     const { children, formActionHandler, fields, formDoc = {}} = props;
     const [ formdata, setFormData ] = useState({});
+    const [ updating, setUpdating ] = useState(false);
     const templateFields:formField[] = fields || [];
 
     const fieldChangeHandler = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -29,7 +30,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     }
 
     const inputField = (fieldItem:formField) => {
-        const { name, inputType, fieldType, caption } = fieldItem;
+        const { name, inputType, fieldType, caption, tailwind } = fieldItem;
         let element = <></>;
         switch(fieldType) {
             case 'textarea':
@@ -38,7 +39,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     rows={4}
                     value={fieldValue(name)} 
                     onChange={(event) => fieldChangeHandler(event)}
-                    className="block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    className={`block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 ${tailwind}`}
                     />;
                 break;
             case 'input':
@@ -47,7 +48,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     name={name}
                     value={fieldValue(name)}
                     onChange={(event) => fieldChangeHandler(event)}
-                    className="bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5"
+                    className={`bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 ${tailwind}`}
                     type={inputType}
                     />;
                 break;
@@ -83,9 +84,10 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
 
     const submitForm = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
+        setUpdating(true);
         if (formActionHandler) {
             const payload = formdata || {};
-            formActionHandler(payload);
+            formActionHandler(payload, setUpdating);
         }
         return false;
     }
@@ -105,7 +107,8 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 <div className="p-4 w-full flex justify-center">
                     <Form.Submit asChild>
                         <button 
-                        className="bg-neutral-500 border border-neutral-600 text-neutral-100 text-xl rounded-lg block w-80 p-2.5"
+                        disabled={updating}
+                        className={`bg-neutral-500 border ${updating && 'opacity-50'} border-neutral-600 text-neutral-100 text-xl rounded-lg block w-80 p-2.5`}
                         onClick={(event:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>submitForm(event)}>Update</button>
                     </Form.Submit>
                 </div>
