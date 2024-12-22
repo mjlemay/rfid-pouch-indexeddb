@@ -3,16 +3,13 @@ import { useDoc, useFind } from 'use-pouchdb';
 import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
 import FormViewer from './formViewer';
 import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
-
-type Doc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
-
-interface docItem extends Doc {
-  name?: string | null;
-}
+import { pouchDocItem } from '@/utils/types';
 
 interface IdsViewProps {
   children?: React.ReactNode;
+  limit?: number;
   actionHandler?: (arg0: string) => void;
+  selectRowHandler?:(arg0: string) => void;
   selectedId: string;
 }
 
@@ -43,16 +40,15 @@ createTheme('dark', {
 });
   
 
-  const RECORD_LIMIT = 1000;
 
   const defaultFields = [{name: "Notes", inputType: "text", fieldType: "textarea"}]
   
   export default function IdsView(props:IdsViewProps):JSX.Element {
-    const { children, selectedId = '' } = props;
+    const { children, selectedId = '', limit, selectRowHandler = () => {} } = props;
     const addUpdateRecordData = useAddUpdateRecordData();
     const hasSelectedId = selectedId !== '';
     const { doc, loading, state, error } = useDoc(selectedId);
-    const { name = '', _id } = doc as docItem || {};
+    const { name = '', _id } = doc as pouchDocItem || {};
     const defaultRecordFields = defaultFields.map(item => item.name);
     defaultRecordFields.unshift('_id');
     const { docs, loading:docsLoading, error:docsError } = useFind({
@@ -63,7 +59,7 @@ createTheme('dark', {
         type: 'record',
       },
       fields: defaultRecordFields,
-      limit: RECORD_LIMIT,
+      limit,
     })
 
     const columns: TableColumn<DataRow>[] = [
@@ -71,6 +67,7 @@ createTheme('dark', {
         name: 'ID',
         selector: row => row._id || '',
         sortable: true,
+        style: {'cursor':'pointer'},
       },
       {
         name: 'Notes',
@@ -79,8 +76,11 @@ createTheme('dark', {
       }
     ];
 
-    const handleRecordUpdate = (payload:{ [key: string]: string }) => {
+    const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
       addUpdateRecordData(payload);
+      setTimeout(()=>{
+        callback(false);
+      }, 200);
     }
 
     useEffect(()=>{
@@ -114,8 +114,8 @@ createTheme('dark', {
             </div>
           )}
         </div>
-        <div className='grow p-4 m-10 h-full'>
-        <h1 className="font-medium text-4xl">Records</h1>
+        <div className='grow p-4 m-10'>
+        <h1 className="font-medium text-4xl">Recent Records</h1>
         {docsLoading && docs.length === 0 && <p>loading...</p>}
         {docsError && JSON.stringify(docsError)}
         {docs.length >= 1 && (<DataTable
@@ -125,6 +125,7 @@ createTheme('dark', {
           defaultSortFieldId="date"
           theme="dark"
           pagination
+          onRowClicked={(row:DataRow)=>{selectRowHandler(row._id)}}
         />)}
           {children}
         </div>

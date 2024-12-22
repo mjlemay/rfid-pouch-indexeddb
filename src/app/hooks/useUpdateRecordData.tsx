@@ -9,34 +9,35 @@ export function useAddUpdateRecordData() {
   const db = usePouch();
 
   return useCallback(
-    async ( payload:{ [key: string]: string }) => {
-      console.log(payload._id);
-        const lastDoc:keyable = {};
-        const getDoc = () => {
-          return db.get(payload._id);
-        }
-        getDoc().then((result) => {
-          console.log('result', result);
-        });
-        const _rev = lastDoc._rev;
-        const doc = { 
-            _rev,
-            type: 'record',
-            ...payload
-        };
-        const update = async () => {
-            try {
-                await db.put(doc);
-              } catch (error) {
-                if (JSON.stringify(error).includes('conflict')) {
-                  update(); // There was a conflict, try again.
-                } else {
-                  console.log('UPDATE error', error);
-                }
+    async ( payload:{ [key: string]: string }, type?: string) => {
+      console.log(payload._id, type);
+      const recordType = type || 'record';
+      const lastDoc:keyable = {};
+      const getDoc = () => {
+        return db.get(payload._id);
+      }
+      getDoc().then((result) => {
+        console.log('result', result);
+      });
+      const _rev = lastDoc._rev;
+      const doc = { 
+          _rev,
+          type: recordType,
+          ...payload
+      };
+      const update = async () => {
+          try {
+              await db.put(doc);
+            } catch (error) {
+              if (JSON.stringify(error).includes('conflict')) {
+                update(); // There was a conflict, try again.
+              } else {
+                console.log('UPDATE error', error);
               }
-        }
-        const result = update();
-        return result;
+            }
+      }
+      const result = update();
+      return result;
     },
     [db]
   )

@@ -1,3 +1,4 @@
+
 export type formFieldOptions = {
     name: string;
     label: string;
@@ -13,3 +14,7 @@ export type formField = {
 }
 
 export type pouchDoc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
+
+export type pouchDocItem = pouchDoc  & {
+    [key: string]: string | number | null;
+}

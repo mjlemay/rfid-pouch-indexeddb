@@ -1,20 +1,12 @@
-import React, { JSX, useEffect } from 'react';
+import React, { JSX } from 'react';
 import FormViewer from './formViewer';
-import { formField } from "../../utils/types";
-import { useDoc } from 'use-pouchdb';
+import { formField, pouchDoc } from "../../utils/types";
 import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
-
-import {
-  RECORD_LIMIT,
-  LOG_LIMIT,
-  WAIT,
-  CPS_MIN,
-  CPS_MAX,
-  ID_LENGTH
-} from "../../utils/consts";
 
 interface SettingsViewProps {
   children?: React.ReactNode;
+  settingsDoc?: pouchDoc |  null;
+  loading?: boolean;
   actionHandler?: (arg0: string) => void;
 }
 
@@ -38,49 +30,24 @@ const settings:formField[] = [
 
   
 export default function SettingsView(props:SettingsViewProps):JSX.Element {
-  const { children } = props;
+  const { children, settingsDoc,loading } = props;
   const addUpdateRecordData = useAddUpdateRecordData();
-  const { doc, loading, state, error } = useDoc('app_settings');
-
   const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
-    addUpdateRecordData(payload);
+    addUpdateRecordData(payload, 'setting');
     setTimeout(()=>{
       callback(false);
     }, 200);
   }
 
-  useEffect(()=>{
-    if (error) {
-      const errorString = JSON.stringify(error);
-      console.log('err', state, error);
-      if (errorString.includes('404')) {
-        // create a new record if one does not exist
-        const defaultSettings = {
-          _id: 'app_settings',
-          RECORD_LIMIT: `${RECORD_LIMIT}`,
-          LOG_LIMIT: `${LOG_LIMIT}`,
-          WAIT: `${WAIT}`,
-          CPS_MIN: `${CPS_MIN}`,
-          CPS_MAX: `${CPS_MAX}`,
-          ID_LENGTH: `${ID_LENGTH}`
-        };
-        addUpdateRecordData(defaultSettings);
-      }
-    }
-  },[addUpdateRecordData, error, state]);
-
-  useEffect(()=>{
-    console.log(doc)
-  },[doc]);
 
   return (
     <div className="flex flex-col h-full w-full">
       <div className="grow p-4 m-10">
         <h1 className="font-medium text-4xl">Settings</h1>
-        {!loading && doc && (
+        {!loading && settingsDoc && (
           <FormViewer
             fields={settings}
-            formDoc={doc}
+            formDoc={settingsDoc}
             formActionHandler={handleRecordUpdate}
           />
         )}

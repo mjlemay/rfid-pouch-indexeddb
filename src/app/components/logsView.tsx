@@ -7,6 +7,7 @@ const LOG_LIMIT = 1000;
 interface LogsViewProps {
   children?: React.ReactNode;
   actionHandler?: (arg0: string) => void;
+  selectRowHandler?: (arg0: string) => void;
 }
 
 interface DataRow {
@@ -37,7 +38,7 @@ createTheme('dark', {
 });
 
 export default function LogsView(props:LogsViewProps):JSX.Element {
-  const { children } = props;
+  const { children, selectRowHandler = ()=>{} } = props;
   
   const { docs, loading, error } = useFind({
     index: {
@@ -61,6 +62,7 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       name: 'scanId',
       selector: row => row.scanId || '',
       sortable: true,
+      style: {'cursor':'pointer'}
     },
     {
       name: 'Date',
@@ -87,6 +89,7 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
         {docs.length >= 1 && (<DataTable
           columns={columns}
           data={docs as unknown as DataRow[]}
+          onRowClicked={(row:DataRow)=>{selectRowHandler(row.scanId as string)}}
           keyField="date"
           defaultSortFieldId="date"
           theme="dark"

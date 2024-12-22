@@ -1,10 +1,10 @@
 import React, { JSX, useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import { formField } from "../../utils/types";
+import { formField, pouchDoc } from "../../utils/types";
 
 interface FormViewerProps {
     children?: React.ReactNode;
-    formDoc?: PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
+    formDoc?: pouchDoc;
     formActionHandler?: (arg0: { [key: string]: string }, arg1: (arg0:boolean) => void) => void;
     fields?: formField[]; 
 }
