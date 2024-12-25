@@ -5,12 +5,13 @@ import { formField, pouchDoc } from "../../utils/types";
 interface FormViewerProps {
     children?: React.ReactNode;
     formDoc?: pouchDoc;
+    inputFocusHandler?: (arg0?:boolean) => void;
     formActionHandler?: (arg0: { [key: string]: string }, arg1: (arg0:boolean) => void) => void;
     fields?: formField[]; 
 }
   
 export default function FormViewer(props:FormViewerProps):JSX.Element {
-    const { children, formActionHandler, fields, formDoc = {}} = props;
+    const { children, formActionHandler = ()=>{}, inputFocusHandler = ()=>{}, fields, formDoc = {}} = props;
     const [ formdata, setFormData ] = useState({});
     const [ updating, setUpdating ] = useState(false);
     const templateFields:formField[] = fields || [];
@@ -37,7 +38,9 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 element = <textarea 
                     name={name}
                     rows={4}
-                    value={fieldValue(name)} 
+                    value={fieldValue(name)}
+                    onBlur={() => inputFocusHandler(true)}
+                    onFocus={() => inputFocusHandler(false)}
                     onChange={(event) => fieldChangeHandler(event)}
                     className={`block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 ${tailwind}`}
                     />;
@@ -47,6 +50,8 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 element = <input 
                     name={name}
                     value={fieldValue(name)}
+                    onBlur={() => inputFocusHandler(true)}
+                    onFocus={() => inputFocusHandler(false)}
                     onChange={(event) => fieldChangeHandler(event)}
                     className={`bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 ${tailwind}`}
                     type={inputType}

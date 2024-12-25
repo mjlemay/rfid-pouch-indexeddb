@@ -8,6 +8,7 @@ interface SettingsViewProps {
   settingsDoc?: pouchDoc |  null;
   loading?: boolean;
   actionHandler?: (arg0: string) => void;
+  inputFocusHandler?:(arg0?:boolean) => void;
 }
 
 const settings:formField[] = [
@@ -30,7 +31,7 @@ const settings:formField[] = [
 
   
 export default function SettingsView(props:SettingsViewProps):JSX.Element {
-  const { children, settingsDoc,loading } = props;
+  const { children, settingsDoc, loading, inputFocusHandler = ()=>{} } = props;
   const addUpdateRecordData = useAddUpdateRecordData();
   const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
     addUpdateRecordData(payload, 'setting');
@@ -48,6 +49,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
           <FormViewer
             fields={settings}
             formDoc={settingsDoc}
+            inputFocusHandler={inputFocusHandler}
             formActionHandler={handleRecordUpdate}
           />
         )}

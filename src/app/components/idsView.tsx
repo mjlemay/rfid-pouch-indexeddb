@@ -8,8 +8,8 @@ import { pouchDocItem } from '@/utils/types';
 interface IdsViewProps {
   children?: React.ReactNode;
   limit?: number;
-  actionHandler?: (arg0: string) => void;
   selectRowHandler?:(arg0: string) => void;
+  inputFocusHandler?:(arg0?:boolean) => void;
   selectedId: string;
 }
 
@@ -44,7 +44,7 @@ createTheme('dark', {
   const defaultFields = [{name: "Notes", inputType: "text", fieldType: "textarea"}]
   
   export default function IdsView(props:IdsViewProps):JSX.Element {
-    const { children, selectedId = '', limit, selectRowHandler = () => {} } = props;
+    const { children, selectedId = '', limit, inputFocusHandler = ()=>{}, selectRowHandler = ()=>{} } = props;
     const addUpdateRecordData = useAddUpdateRecordData();
     const hasSelectedId = selectedId !== '';
     const { doc, loading, state, error } = useDoc(selectedId);
@@ -105,7 +105,12 @@ createTheme('dark', {
           {!loading && doc && (
             <>
               <h1 className="font-medium text-3xl">Details for {doc && name}({_id})</h1>
-              <FormViewer formDoc={doc} fields={defaultFields} formActionHandler={handleRecordUpdate} />
+              <FormViewer 
+                formDoc={doc}
+                fields={defaultFields}
+                inputFocusHandler={inputFocusHandler}
+                formActionHandler={handleRecordUpdate}
+                />
             </>
           )}
           {!hasSelectedId && (

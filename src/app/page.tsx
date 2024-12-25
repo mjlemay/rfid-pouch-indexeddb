@@ -22,11 +22,10 @@ import { pouchDocItem } from "../utils/types";
 
 
 export default function Home() {
-  const addScanRecord = useAddScanRecord();
-  const rifdNumber = useRFIDNumber();
   const [ view, setView ] = useState('log');
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
+  const [ readReady, setReadReady ] = useState(true);
   const addUpdateRecordData = useAddUpdateRecordData();
   const { 
     doc: settingsDoc,
@@ -34,6 +33,8 @@ export default function Home() {
     state: settingsState,
     error:settingsError 
 } = useDoc('app_settings');
+const addScanRecord = useAddScanRecord();
+const rifdNumber = useRFIDNumber(readReady);
 const pouchSettingsDoc = settingsDoc as pouchDocItem; 
   
 
@@ -41,6 +42,11 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
     if (action) {
       setView(action);
     }
+  }
+
+  const handleFocusChange = (value?:boolean) => {
+    const newValue = value || false;
+    setReadReady(newValue);
   }
 
   useEffect(() => {
@@ -80,12 +86,12 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
       className={`flex w-screen bg-neutral-900 text-white select-none`}
       data-theme={"darkTheme"}
     >
-      <SideMenuBar selected={view} screenActionHandler={handleAction}  />
+      <SideMenuBar selected={view} readReady={readReady} screenActionHandler={handleAction}  />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>
         {view == 'ids' && <IdsView 
-          actionHandler={handleAction} 
           selectRowHandler={setSelectedId}
+          inputFocusHandler={handleFocusChange}
           selectedId={selectedId}
             limit={parseInt(pouchSettingsDoc.RECORD_LIMIT as string)}
           />}
@@ -96,6 +102,7 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
           {view == 'inputs' && <InputsView actionHandler={handleAction} />}
           {view == 'settings' && <SettingsView 
             actionHandler={handleAction}
+            inputFocusHandler={handleFocusChange}
             loading={loadingSettings}
             settingsDoc={settingsDoc} 
           />}

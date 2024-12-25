@@ -5,49 +5,52 @@ const CPS_MIN = 3;
 const CPS_MAX = 30;
 const ID_LENGTH = 8;
 
-export function useRFIDNumber() {
+export function useRFIDNumber(enabled:boolean) {
     const [ codeString, setCodeString ] = useState('');
     const [ rfidCode, setRfidCode ] = useState('');
     const [ lastDate, setLastDate ] = useState(new Date());
+    const isEnabled = enabled || false;
 
     const handleUserKeyPress = useCallback((event:KeyboardEvent) => {
-    const { key, keyCode } = event;
-    const nextDate = new Date();
-    let cps = nextDate.getTime() - lastDate.getTime();
-    if (cps >= WAIT) {
-        setRfidCode('');
-        cps = CPS_MIN; //allows for first character to pass through
-    }
+        const { key } = event;
+        const nextDate = new Date();
+        let cps = nextDate.getTime() - lastDate.getTime();
+        if (cps >= WAIT) {
+            setRfidCode('');
+            cps = CPS_MIN; //allows for first character to pass through
+        }
 
-    if (
-        key !== 'enter'
-        && keyCode !== 13
-        && cps <= CPS_MAX
-        && cps >= CPS_MIN
-    ) {
-        const newCode = codeString + key;
-        setCodeString(newCode);
-        setRfidCode('');
-    }
-    if (
-        cps > CPS_MAX
-        || cps < CPS_MIN
-    ) {
-        setCodeString(''); // resets reader if cps is inconsistent
-    }
-    // clear values if rfid value or has reach id length
-    if (
-        (
-            key !== 'enter'
-            && keyCode !== 13
-            && codeString.length === ID_LENGTH - 1
-        )
-    ) {
-        setRfidCode(codeString);
-        setCodeString('');
-    }
-    setLastDate(nextDate);
-    }, [codeString, lastDate]);
+        if (
+            isEnabled
+            && key !== 'enter'
+            && cps <= CPS_MAX
+            && cps >= CPS_MIN
+        ) {
+            const newCode = codeString + key;
+            console.log(newCode);
+            setCodeString(newCode);
+            setRfidCode('');
+        }
+        if (
+            cps > CPS_MAX
+            || cps < CPS_MIN
+        ) {
+            setCodeString(''); // resets reader if cps is inconsistent
+        }
+        // clear values if rfid value or has reach id length
+        if (
+            (
+                isEnabled
+                && key !== 'enter'
+                && codeString.length === ID_LENGTH
+            )
+        ) {
+            setRfidCode(codeString);
+            setCodeString('');
+        }
+
+        setLastDate(nextDate);
+    }, [codeString, isEnabled, lastDate]);
 
     useEffect(() => {
         window.addEventListener("keydown", handleUserKeyPress);

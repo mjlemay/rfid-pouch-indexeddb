@@ -6,19 +6,23 @@ import {
   InputIcon,
 } from '@radix-ui/react-icons';
 import IconButton from './iconButton';
+import ReadyLight from './readyLight';
 
 interface SideMenuBarProps {
     children?: React.ReactNode;
     selected?: string;
+    readReady?: boolean;
     screenActionHandler: (arg0: string) => void;
   }
   
   export default function SideMenuBar(props:SideMenuBarProps):JSX.Element {
-    const { children, screenActionHandler, selected} = props;
+    const { children, screenActionHandler, readReady = false, selected} = props;
   
     return (
       <div className={`h-screen min-h-screen w-[75px] bg-black`}>
-        <div className="min-w-[50px] min-h-[50px]"></div>
+        <div className="min-w-[50px] min-h-[50px] flex justify-center items-center ">
+          <ReadyLight enabled={readReady} />
+        </div>
         <IconButton selected={selected === 'ids'} handleAction={()=> screenActionHandler('ids')}>
             <AvatarIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
