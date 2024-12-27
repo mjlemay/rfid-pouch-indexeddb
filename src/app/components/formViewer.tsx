@@ -101,7 +101,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         if (formDoc) {
             setFormData(formDoc);
         }
-    },[])
+    },[formDoc])
 
     return (
         <div className="">

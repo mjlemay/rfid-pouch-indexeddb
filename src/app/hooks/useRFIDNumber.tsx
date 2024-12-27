@@ -27,7 +27,6 @@ export function useRFIDNumber(enabled:boolean) {
             && cps >= CPS_MIN
         ) {
             const newCode = codeString + key;
-            console.log(newCode);
             setCodeString(newCode);
             setRfidCode('');
         }
