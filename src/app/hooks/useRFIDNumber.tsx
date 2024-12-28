@@ -8,6 +8,7 @@ const ID_LENGTH = 8;
 export function useRFIDNumber(enabled:boolean) {
     const [ codeString, setCodeString ] = useState('');
     const [ rfidCode, setRfidCode ] = useState('');
+    const [ isListening, setIsListening ] = useState(false);
     const [ lastDate, setLastDate ] = useState(new Date());
     const isEnabled = enabled || false;
 
@@ -44,7 +45,11 @@ export function useRFIDNumber(enabled:boolean) {
                 && codeString.length === ID_LENGTH
             )
         ) {
-            setRfidCode(codeString);
+ 
+            const hexadecimalRegex = new RegExp('^(0x|0X)?[a-fA-F0-9]+$');     
+            if (hexadecimalRegex.test(codeString)) {
+                setRfidCode(codeString);
+            }
             setCodeString('');
         }
 
@@ -52,11 +57,14 @@ export function useRFIDNumber(enabled:boolean) {
     }, [codeString, isEnabled, lastDate]);
 
     useEffect(() => {
-        window.addEventListener("keydown", handleUserKeyPress);
-        return () => {
-            window.removeEventListener("keydown", handleUserKeyPress);
-        };
-    }, [handleUserKeyPress]);
+        if (!isListening) {
+            window.addEventListener("keydown", handleUserKeyPress);
+            setIsListening(true);
+            return () => {
+                window.removeEventListener("keydown", handleUserKeyPress);
+            };
+        }
+    }, [handleUserKeyPress, isListening, setIsListening]);
 
     return rfidCode;
 }
