@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       unoptimized: true,
   },
   distDir: 'out', 
-  trailingSlash: true,
+  // trailingSlash: true,
   assetPrefix: '.',
   staticPageGenerationTimeout: 1000,
   reactStrictMode: false

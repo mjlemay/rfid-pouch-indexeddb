@@ -19,6 +19,10 @@ then
 npm run build
 ```
 
+This will create a static build in the `out` folder. This folder is all you need! No additional commands required.
+
+## Customizations 
+
 To add your own tweaks, run the development server:
 
 ```bash
