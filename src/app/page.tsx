@@ -16,7 +16,8 @@ import {
   WAIT,
   CPS_MIN,
   CPS_MAX,
-  ID_LENGTH
+  ID_LENGTH,
+  DEVICE_TYPE
 } from "../utils/consts";
 import { pouchDocItem } from "../utils/types";
 
@@ -69,6 +70,7 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
         // create a new record if one does not exist
         const defaultSettings = {
           _id: 'app_settings',
+          DEVICE_TYPE: `${DEVICE_TYPE}`,
           RECORD_LIMIT: `${RECORD_LIMIT}`,
           LOG_LIMIT: `${LOG_LIMIT}`,
           WAIT: `${WAIT}`,

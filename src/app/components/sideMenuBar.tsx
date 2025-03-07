@@ -2,8 +2,8 @@ import React, { JSX } from 'react';
 import { 
   ActivityLogIcon,
   AvatarIcon,
-  // GearIcon,
-  // InputIcon,
+  GearIcon,
+  InputIcon,
 } from '@radix-ui/react-icons';
 import IconButton from './iconButton';
 import ReadyLight from './readyLight';
@@ -29,12 +29,12 @@ interface SideMenuBarProps {
         <IconButton selected={selected === 'logs'} handleAction={()=> screenActionHandler('logs')}>
             <ActivityLogIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
-        {/* <IconButton selected={selected === 'inputs'} handleAction={()=> screenActionHandler('inputs')}>
+        <IconButton selected={selected === 'inputs'} handleAction={()=> screenActionHandler('inputs')}>
             <InputIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
         <IconButton selected={selected === 'settings'} handleAction={()=> screenActionHandler('settings')}>
             <GearIcon className="min-w-[50px] min-h-[50px]" />
-        </IconButton> */}
+        </IconButton>
         {children}
       </div>
     )

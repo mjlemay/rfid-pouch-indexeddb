@@ -1,6 +1,7 @@
 import React, { JSX, useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
 import { formField, pouchDoc } from "../../utils/types";
+import SelectDropdown from "./selectDropdown";
 
 interface FormViewerProps {
     children?: React.ReactNode;
@@ -24,6 +25,13 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         return false;
     }
 
+    const selectHandler = (value:string, name:string) => {
+        const changeFormData = JSON.parse(JSON.stringify(formdata));
+        console.log(name, value);
+        changeFormData[`${name}`] = value;
+        setFormData(changeFormData);
+    }
+
     const fieldValue = (key:string) => {
         const keyTyped = key as keyof typeof formdata;
         const value = formdata[keyTyped];
@@ -32,7 +40,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
 
     const inputField = (fieldItem:formField) => {
         const { name, inputType, fieldType, caption, tailwind } = fieldItem;
-        let element = <></>;
+        let element;
         switch(fieldType) {
             case 'textarea':
                 element = <textarea 
@@ -44,6 +52,17 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     onChange={(event) => fieldChangeHandler(event)}
                     className={`block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 ${tailwind}`}
                     />;
+                break;
+            case 'select':
+                element = <SelectDropdown
+                    options={fieldItem.options || []}
+                    value={fieldValue(name)}
+                    label={name}
+                    onValueChange={(selectValue:string) => selectHandler(selectValue, name)}
+                />;
+                break;
+            case 'header':
+                element = <div className="pt-6"><h2 className="text-2xl font-bold">{name}</h2><p>{caption}</p></div>;
                 break;
             case 'input':
             default:
@@ -58,33 +77,37 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     />;
                 break;
         }
-        return (
-            <Form.Field 
-                className="pt-4 flex flex-row justify-items-start content-center gap-4"
-                name={name}
-                key={`field_${name}`}
-            >
-                <div
-                    className="self-center w-40 min-w-36"
-                    style={{
-                        display: `${inputType === 'hidden' ? 'none' : 'flex'}`,
-                        alignItems: "baseline",
-                        justifyContent: "space-between",
-                    }}
+        if (fieldType === 'header'){
+            return <div key={`header_${name}`}>{element}</div>;
+        } else {
+            return (
+                <Form.Field 
+                    className="pt-4 flex flex-row justify-items-start content-center gap-4"
+                    name={name}
+                    key={`field_${name}`}
                 >
-                    <Form.Label className="text-xl font-bold">{name}</Form.Label>
-                </div>
-                <div className={`self-center ${fieldType === 'textarea' && 'grow'}`}>
-                    <Form.Control asChild className="text-black text-lg">
-                        {element}
-                    </Form.Control>
-                </div>
-                {caption && (<div className="self-center text-sm font-thin max-w-80">
-                    {caption && (<Form.Message>{caption}</Form.Message>)}
-                </div>
-                )}
-            </Form.Field>
-        )
+                    <div
+                        className="self-center w-40 min-w-36"
+                        style={{
+                            display: `${inputType === 'hidden' ? 'none' : 'flex'}`,
+                            alignItems: "baseline",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Form.Label className="text-xl font-bold">{name}</Form.Label>
+                    </div>
+                    <div className={`self-center ${fieldType === 'textarea' && 'grow'}`}>
+                        <Form.Control asChild className="text-black text-lg">
+                            {element}
+                        </Form.Control>
+                    </div>
+                    {caption && (<div className="self-center text-sm font-thin max-w-80">
+                        {caption && (<Form.Message>{caption}</Form.Message>)}
+                    </div>
+                    )}
+                </Form.Field>
+            )
+        }
     }
 
     const submitForm = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

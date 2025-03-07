@@ -2,7 +2,14 @@
 export type formFieldOptions = {
     name: string;
     label: string;
+    options?: formFieldOptions[];
 }
+
+export type formFieldSelectOption = {
+    name: string;
+    value: string;
+}
+
 
 export type formField = {
     name: string;
@@ -10,7 +17,7 @@ export type formField = {
     fieldType: string;
     caption?: string;
     tailwind?: string;
-    options?: formFieldOptions[];
+    options?: formFieldSelectOption[];
 }
 
 export type pouchDoc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;

@@ -17,7 +17,7 @@ export function useAddUpdateRecordData() {
         return db.get(payload._id);
       }
       getDoc().then((result) => {
-        console.log('result', result);
+        console.log('Doc Exists', result);
       });
       const _rev = lastDoc._rev;
       const doc = { 

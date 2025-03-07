@@ -1,3 +1,4 @@
+export const DEVICE_TYPE = 'rfid';
 export const RECORD_LIMIT = 1000;
 export const LOG_LIMIT = 1000;
 export const WAIT = 300;
