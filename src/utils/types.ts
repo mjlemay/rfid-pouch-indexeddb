@@ -10,6 +10,10 @@ export type formFieldSelectOption = {
     value: string;
 }
 
+type formFieldCondition = {
+    field: string;
+    value: string;
+}
 
 export type formField = {
     name: string;
@@ -18,6 +22,7 @@ export type formField = {
     caption?: string;
     tailwind?: string;
     options?: formFieldSelectOption[];
+    condition?: formFieldCondition;
 }
 
 export type pouchDoc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;

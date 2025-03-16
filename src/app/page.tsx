@@ -8,6 +8,7 @@ import InputsView from './components/inputsView';
 import SettingsView from './components/settingsView';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
+import { usePCSCItem } from './hooks/usePCSCItem';
 import { useAddUpdateRecordData } from './hooks/useUpdateRecordData';
 import { useDoc } from 'use-pouchdb';
 import {
@@ -26,7 +27,8 @@ export default function Home() {
   const [ view, setView ] = useState('log');
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
-  const [ readReady, setReadReady ] = useState(true);
+  const [ numReady, setnumReady ] = useState(true);
+  const [ itemReady, setItemReady ] = useState(true);
   const addUpdateRecordData = useAddUpdateRecordData();
   const { 
     doc: settingsDoc,
@@ -35,7 +37,8 @@ export default function Home() {
     error:settingsError 
 } = useDoc('app_settings');
 const addScanRecord = useAddScanRecord();
-const rifdNumber = useRFIDNumber(readReady);
+const rifdNumber = useRFIDNumber(numReady);
+const pcscItem = usePCSCItem(itemReady);
 const pouchSettingsDoc = settingsDoc as pouchDocItem; 
   
 
@@ -47,7 +50,7 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
 
   const handleFocusChange = (value?:boolean) => {
     const newValue = value || false;
-    setReadReady(newValue);
+    setnumReady(newValue);
   }
 
   useEffect(() => {
@@ -88,7 +91,7 @@ const pouchSettingsDoc = settingsDoc as pouchDocItem;
       className={`flex w-screen bg-neutral-900 text-white select-none`}
       data-theme={"darkTheme"}
     >
-      <SideMenuBar selected={view} readReady={readReady} screenActionHandler={handleAction}  />
+      <SideMenuBar selected={view} scanReady={numReady} screenActionHandler={handleAction}  />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>
         {view == 'ids' && <IdsView 

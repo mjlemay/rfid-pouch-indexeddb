@@ -11,17 +11,17 @@ import ReadyLight from './readyLight';
 interface SideMenuBarProps {
     children?: React.ReactNode;
     selected?: string;
-    readReady?: boolean;
+    scanReady?: boolean;
     screenActionHandler: (arg0: string) => void;
   }
   
   export default function SideMenuBar(props:SideMenuBarProps):JSX.Element {
-    const { children, screenActionHandler, readReady = false, selected} = props;
+    const { children, screenActionHandler, scanReady = false, selected} = props;
   
     return (
       <div className={`h-screen min-h-screen w-[75px] bg-black`}>
         <div className="min-w-[50px] min-h-[50px] flex justify-center items-center ">
-          <ReadyLight enabled={readReady} />
+          <ReadyLight enabled={scanReady} />
         </div>
         <IconButton selected={selected === 'ids'} handleAction={()=> screenActionHandler('ids')}>
             <AvatarIcon className="min-w-[50px] min-h-[50px]" />

@@ -39,7 +39,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     }
 
     const inputField = (fieldItem:formField) => {
-        const { name, inputType, fieldType, caption, tailwind } = fieldItem;
+        const { condition, name, inputType, fieldType, caption, tailwind } = fieldItem;
         let element;
         switch(fieldType) {
             case 'textarea':
@@ -78,11 +78,11 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 break;
         }
         if (fieldType === 'header'){
-            return <div key={`header_${name}`}>{element}</div>;
+            return shouldDisplay(condition) && <div key={`header_${name}`}>{element}</div>;
         } else {
             return (
                 <Form.Field 
-                    className="pt-4 flex flex-row justify-items-start content-center gap-4"
+                    className={shouldDisplay(condition) ? `pt-4 flex flex-row justify-items-start content-center gap-4` : `hidden`}
                     name={name}
                     key={`field_${name}`}
                 >
@@ -108,6 +108,17 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 </Form.Field>
             )
         }
+    }
+
+    const shouldDisplay = (condition:formField['condition']) => {
+        if (condition) {
+            const { field, value } = condition;
+            if (field && value) {
+                const fieldTyped = field as keyof typeof formdata;
+                return formdata[fieldTyped] === value;
+            }
+        }
+        return true;
     }
 
     const submitForm = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
