@@ -1,6 +1,7 @@
 import React, { JSX, useEffect } from 'react';
 import { useFind } from 'use-pouchdb';
-import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
 
 const LOG_LIMIT = 1000;
 
@@ -15,27 +16,6 @@ interface DataRow {
   scanId?: string;
 }
 
-createTheme('dark', {
-  text: {
-    primary: '#fff',
-    secondary: '#fff',
-  },
-  background: {
-    default: 'rgba(0,0,0,0)',
-  },
-  context: {
-    background: 'rgba(255,255,255,.5)',
-    text: '#fff',
-  },
-  divider: {
-    default: 'rgba(255,255,255,.25)',
-  },
-  action: {
-    button: 'rgba(0,0,0,.54)',
-    hover: 'rgba(0,0,0,.08)',
-    disabled: 'rgba(0,0,0,.12)',
-  },
-});
 
 export default function LogsView(props:LogsViewProps):JSX.Element {
   const { children, selectRowHandler = ()=>{} } = props;
@@ -92,7 +72,7 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
           onRowClicked={(row:DataRow)=>{selectRowHandler(row.scanId as string)}}
           keyField="date"
           defaultSortFieldId="date"
-          theme="dark"
+          theme={DATA_TABLE_THEME}
           pagination
         />)}
         {children}

@@ -2,16 +2,166 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Theme palettes. Each block defines the same tokens; tailwind.config.ts maps
+  them onto semantic color names. The active theme is the data-theme attribute
+  on the html element, set by useApplyAppearance. Dark is also the :root
+  default so the first paint matches before settings load.
+*/
+
+:root,
+[data-theme="dark"] {
+  --color-background: #171717;
+  --color-sidebar: #000000;
+  --color-surface: #0a0a0a;
+  --color-raised: #262626;
+  --color-line: #404040;
+  --color-text: #ededed;
+  --color-heading: #ededed;
+  --color-accent: #86efac;
+  --color-muted: #450a0a;
+  --color-control: #525252;
+  --color-control-text: #f5f5f5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="light"] {
+  --color-background: #f5f5f5;
+  --color-sidebar: #e5e5e5;
+  --color-surface: #ffffff;
+  --color-raised: #d4d4d4;
+  --color-line: #a3a3a3;
+  --color-text: #171717;
+  --color-heading: #171717;
+  --color-accent: #16a34a;
+  --color-muted: #d4d4d4;
+  --color-control: #525252;
+  --color-control-text: #ffffff;
+}
+
+[data-theme="red"] {
+  --color-background: #2a0a0a;
+  --color-sidebar: #160404;
+  --color-surface: #1c0606;
+  --color-raised: #450a0a;
+  --color-line: #7f1d1d;
+  --color-text: #fde2e2;
+  --color-heading: #fecaca;
+  --color-accent: #fca5a5;
+  --color-muted: #3f1010;
+  --color-control: #b91c1c;
+  --color-control-text: #ffffff;
+}
+
+[data-theme="green"] {
+  --color-background: #06200f;
+  --color-sidebar: #03110a;
+  --color-surface: #041a0c;
+  --color-raised: #14532d;
+  --color-line: #166534;
+  --color-text: #dcfce7;
+  --color-heading: #bbf7d0;
+  --color-accent: #86efac;
+  --color-muted: #0b2e18;
+  --color-control: #15803d;
+  --color-control-text: #ffffff;
+}
+
+[data-theme="blue"] {
+  --color-background: #0a1226;
+  --color-sidebar: #040814;
+  --color-surface: #060c1c;
+  --color-raised: #172554;
+  --color-line: #1e3a8a;
+  --color-text: #dbe7ff;
+  --color-heading: #bfdbfe;
+  --color-accent: #93c5fd;
+  --color-muted: #101c3f;
+  --color-control: #1d4ed8;
+  --color-control-text: #ffffff;
+}
+
+[data-theme="yellow"] {
+  --color-background: #2a1f05;
+  --color-sidebar: #150f02;
+  --color-surface: #1f1703;
+  --color-raised: #4a3508;
+  --color-line: #a16207;
+  --color-text: #fef3c7;
+  --color-heading: #fde68a;
+  --color-accent: #fcd34d;
+  --color-muted: #3d2d08;
+  --color-control: #d4a017;
+  --color-control-text: #1f1703;
+}
+
+[data-theme="purple"] {
+  --color-background: #1a0b2e;
+  --color-sidebar: #0d0518;
+  --color-surface: #130820;
+  --color-raised: #3b0764;
+  --color-line: #6b21a8;
+  --color-text: #f3e8ff;
+  --color-heading: #e9d5ff;
+  --color-accent: #d8b4fe;
+  --color-muted: #2a1247;
+  --color-control: #7e22ce;
+  --color-control-text: #ffffff;
+}
+
+[data-theme="rose"] {
+  --color-background: #2a1618;
+  --color-sidebar: #160a0b;
+  --color-surface: #1f0f11;
+  --color-raised: #4d2a2e;
+  --color-line: #8c5a5f;
+  --color-text: #fbe9e7;
+  --color-heading: #e8c4bd;
+  --color-accent: #f4c2c2;
+  --color-muted: #42262a;
+  --color-control: #b76e79;
+  --color-control-text: #160a0b;
+}
+
+[data-theme="silver"] {
+  --color-background: #2b2f36;
+  --color-sidebar: #15181d;
+  --color-surface: #1f232a;
+  --color-raised: #475569;
+  --color-line: #6b7280;
+  --color-text: #e5e7eb;
+  --color-heading: #f1f5f9;
+  --color-accent: #e2e8f0;
+  --color-muted: #3a404a;
+  --color-control: #94a3b8;
+  --color-control-text: #0f172a;
+}
+
+[data-theme="gold"] {
+  --color-background: #15120a;
+  --color-sidebar: #0a0905;
+  --color-surface: #0f0d07;
+  --color-raised: #3a3014;
+  --color-line: #daa520;
+  --color-text: #fff8dc;
+  --color-heading: #ffd700;
+  --color-accent: #ffd700;
+  --color-muted: #2b2410;
+  --color-control: #daa520;
+  --color-control-text: #1a1400;
+}
+
+[data-theme="copper"] {
+  --color-background: #2a1408;
+  --color-sidebar: #150a04;
+  --color-surface: #1f0f06;
+  --color-raised: #4a2510;
+  --color-line: #9a3412;
+  --color-text: #ffedd5;
+  --color-heading: #fed7aa;
+  --color-accent: #fdba74;
+  --color-muted: #3f1f0e;
+  --color-control: #b87333;
+  --color-control-text: #150a04;
 }
 
 @media (min-width: 640px) {
@@ -21,9 +171,8 @@
   }
 }
 
-
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--color-text);
+  background: var(--color-background);
   font-family: Arial, Helvetica, sans-serif;
 }

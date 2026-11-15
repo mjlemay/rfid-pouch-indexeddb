@@ -10,7 +10,7 @@ interface ReadyLightProps {
     const { enabled = false, handleAction } = props;
   
     return (
-      <div title={`RFID SCAN Enabled: ${enabled ? 'Yes' : 'No'}`} className={`cursor-pointer w-[30px] h-[30px] ring-2 ring-neutral-800 ${enabled ? 'bg-green-300' : 'bg-red-950'} rounded-full m-1 p-2`}
+      <div title={`RFID SCAN Enabled: ${enabled ? 'Yes' : 'No'}`} className={`cursor-pointer w-[30px] h-[30px] ring-2 ring-sidebar ${enabled ? 'bg-accent' : 'bg-muted'} rounded-full m-1 p-2`}
         onClick={() => handleAction && handleAction()}
       />
     )

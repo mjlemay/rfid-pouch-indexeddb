@@ -6,8 +6,10 @@ import LogsView from './components/logsView';
 import IdsView from './components/idsView';
 import InputsView from './components/inputsView';
 import SettingsView from './components/settingsView';
+import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
+import { useApplyAppearance } from './hooks/useApplyAppearance';
 import { useAddUpdateRecordData } from './hooks/useUpdateRecordData';
 import { useDoc } from 'use-pouchdb';
 import {
@@ -20,6 +22,7 @@ import {
 } from "../utils/consts";
 import { pouchDocItem } from "../utils/types";
 import { DEFAULT_RFID_PARSER_CONFIG, parserConfigFromSettings } from "../utils/rfidKeystrokeParser";
+import { appearanceFromSettings, DEFAULT_APPEARANCE } from "../utils/themes";
 
 
 export default function Home() {
@@ -41,6 +44,11 @@ const rfidParserConfig = useMemo(
   [pouchSettingsDoc],
 );
 const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
+const appearance = useMemo(
+  () => appearanceFromSettings(pouchSettingsDoc, DEFAULT_APPEARANCE),
+  [pouchSettingsDoc],
+);
+useApplyAppearance(appearance);
   
 
   const handleAction = (action:string) => {
@@ -74,6 +82,8 @@ const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
         // create a new record if one does not exist
         const defaultSettings = {
           _id: 'app_settings',
+          TITLE: DEFAULT_APPEARANCE.title,
+          THEME: DEFAULT_APPEARANCE.theme,
           RECORD_LIMIT: `${RECORD_LIMIT}`,
           LOG_LIMIT: `${LOG_LIMIT}`,
           WAIT: `${WAIT}`,
@@ -88,10 +98,11 @@ const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
 
   return (
     <div
-      className={`flex w-screen bg-neutral-900 text-white select-none`}
-      data-theme={"darkTheme"}
+      className={`flex w-full min-h-screen bg-background text-text select-none`}
     >
       <SideMenuBar selected={view} scanReady={numReady} screenActionHandler={handleAction}  />
+      <div className="flex flex-1 flex-col min-w-0">
+      <TopBar title={appearance.title} />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>
         {view == 'ids' && <IdsView 
@@ -113,6 +124,7 @@ const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
           />}
         </div>
       )}
+      </div>
     </div>
   );
 }

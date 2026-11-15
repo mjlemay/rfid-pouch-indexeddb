@@ -1,7 +1,8 @@
-import React, { JSX } from 'react';
+import React, { JSX, useMemo } from 'react';
 import FormViewer from './formViewer';
 import { formField, pouchDoc } from "../../utils/types";
 import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
+import { DEFAULT_THEME, DEFAULT_TITLE, THEME_OPTIONS } from '../../utils/themes';
 
 interface SettingsViewProps {
   children?: React.ReactNode;
@@ -12,6 +13,23 @@ interface SettingsViewProps {
 }
 
 const settingsFields:formField[] = [
+  {
+    name: "APPEARANCE", inputType: "none", fieldType: "header", tailwind:"text-center",
+    caption: "Name this page and choose its colors.",
+  },
+  {
+    name: "TITLE", inputType: "text", fieldType: "input", tailwind:"text-center",
+    caption: "Shown in the browser tab and at the top of every view",
+  },
+  {
+    name: "THEME", inputType: "select", fieldType: "select", tailwind:"text-center",
+    caption: "Color theme for the whole page",
+    options: THEME_OPTIONS,
+  },
+  {
+    name: "DATA STORAGE", inputType: "none", fieldType: "header", tailwind:"text-center",
+    caption: "Storage limits.",
+  },
   {
     name: "RECORD_LIMIT", inputType: "text", fieldType: "input", tailwind:"text-center",
     caption: "Max number of records to keep. Reduce this if app becomes less performant",
@@ -42,6 +60,12 @@ const settingsFields:formField[] = [
 export default function SettingsView(props:SettingsViewProps):JSX.Element {
   const { children, settingsDoc, loading, inputFocusHandler = ()=>{} } = props;
   const addUpdateRecordData = useAddUpdateRecordData();
+  // Settings saved before themes existed have no TITLE or THEME, so the form
+  // shows the defaults for them instead of empty values.
+  const formDoc = useMemo(
+    () => settingsDoc ? { TITLE: DEFAULT_TITLE, THEME: DEFAULT_THEME, ...settingsDoc } : undefined,
+    [settingsDoc],
+  );
   const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
     addUpdateRecordData(payload, 'setting');
     setTimeout(()=>{
@@ -57,7 +81,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
         {!loading && settingsDoc && (
           <FormViewer
             fields={settingsFields}
-            formDoc={settingsDoc}
+            formDoc={formDoc}
             inputFocusHandler={inputFocusHandler}
             formActionHandler={handleRecordUpdate}
           />

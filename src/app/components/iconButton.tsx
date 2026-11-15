@@ -11,7 +11,7 @@ interface IconButtonProps {
     const { children, selected = false,  handleAction } = props;
   
     return (
-      <div className={`cursor-pointer min-w-[40px] min-h-[40px] hover:bg-neutral-800 ${selected && 'bg-neutral-700'} rounded-lg m-1 p-2 flex justify-center items-center`}
+      <div className={`cursor-pointer min-w-[40px] min-h-[40px] hover:bg-raised ${selected ? 'bg-control text-control-text' : ''} rounded-lg m-1 p-2 flex justify-center items-center`}
         onClick={() => handleAction && handleAction()}
       >
         {children}
