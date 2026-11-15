@@ -1,7 +1,7 @@
 import React, { JSX, useMemo } from 'react';
 import { useFind } from 'use-pouchdb';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
+import { DATA_TABLE_STYLES, DATA_TABLE_THEME } from '../../utils/dataTableTheme';
 import { RecordChange } from '../../utils/templates';
 
 interface LogsViewProps {
@@ -40,8 +40,8 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
   );
 
   const columns: TableColumn<FeedRow>[] = [
-    { name: 'Tag', selector: row => row.scanId || '', sortable: true, style: {'cursor':'pointer'}, maxWidth: '160px' },
-    { name: 'Event', selector: row => (row.type === 'scan' ? 'Scan' : 'Updated'), maxWidth: '120px' },
+    { name: 'Tag', selector: row => row.scanId || '', sortable: true, style: {'cursor':'pointer'}, minWidth: '140px', grow: 0 },
+    { name: 'Event', selector: row => (row.type === 'scan' ? 'Scan' : 'Updated'), minWidth: '120px', grow: 0 },
     {
       name: 'Details',
       cell: row => (
@@ -57,7 +57,8 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
       sortable: true,
       format: row => row.date && new Date(row.date).toLocaleString(),
       right: true,
-      maxWidth: '240px',
+      minWidth: '260px',
+      grow: 0,
     }
   ];
 
@@ -72,6 +73,7 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
           onRowClicked={(row:FeedRow)=>{selectRowHandler(row.scanId)}}
           keyField="_id"
           theme={DATA_TABLE_THEME}
+          customStyles={DATA_TABLE_STYLES}
           pagination
         />)}
         {!loading && rows.length === 0 && <p>No activity yet.</p>}

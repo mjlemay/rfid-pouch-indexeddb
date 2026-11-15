@@ -3,7 +3,7 @@ import { useDoc, useFind } from 'use-pouchdb';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import FormViewer from './formViewer';
-import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
+import { DATA_TABLE_STYLES, DATA_TABLE_THEME } from '../../utils/dataTableTheme';
 import { formField, formValues } from '../../utils/types';
 import { useSaveDocument } from '../hooks/useSaveDocument';
 import { useSaveRecord } from '../hooks/useSaveRecord';
@@ -236,6 +236,7 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
           data={docs as unknown as DataRow[]}
           keyField="_id"
           theme={DATA_TABLE_THEME}
+          customStyles={DATA_TABLE_STYLES}
           pagination
           onRowClicked={(row:DataRow)=>{selectRowHandler(row._id)}}
         />)}
