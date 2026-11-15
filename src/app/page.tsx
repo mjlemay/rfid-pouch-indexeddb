@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import SideMenuBar from './components/sideMenuBar';
 import LogsView from './components/logsView';
 import IdsView from './components/idsView';
-import InputsView from './components/inputsView';
+import TemplatesView from './components/templatesView';
 import SettingsView from './components/settingsView';
 import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
@@ -115,7 +115,7 @@ useApplyAppearance(appearance);
             actionHandler={handleAction}
             selectRowHandler={(scanId) => { setSelectedId(scanId); setView('ids'); }}
           />}
-          {view == 'inputs' && <InputsView actionHandler={handleAction} />}
+          {view == 'inputs' && <TemplatesView inputFocusHandler={handleFocusChange} />}
           {view == 'settings' && <SettingsView 
             actionHandler={handleAction}
             inputFocusHandler={handleFocusChange}
