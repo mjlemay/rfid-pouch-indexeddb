@@ -29,7 +29,15 @@ interface IdsViewProps {
 }
 
 interface DataRow {
-  [key: string]: string
+  _id: string;
+  Notes?: string;
+  data?: Record<string, FieldValue>;
+}
+
+function displayFieldValue(value: FieldValue | undefined): string {
+  if (value === undefined || value === null) return '';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
 }
 
 const TEMPLATE_FIELD = 'templateId';
@@ -93,13 +101,21 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
   const { docs, loading:docsLoading, error:docsError } = useFind({
     index: { fields: ['type'] },
     selector,
-    fields: ['_id', 'Notes'],
+    fields: ['_id', 'Notes', 'data'],
     limit,
   });
 
+  // When one template is selected, show its fields as columns next to Notes.
+  const filteredTemplate = templates.find((template) => template._id === filter);
   const columns: TableColumn<DataRow>[] = [
     { name: 'ID', selector: row => row._id || '', sortable: true, style: {'cursor':'pointer'} },
-    { name: 'Notes', selector: row => row.Notes || '', grow: 12 },
+    { name: 'Notes', selector: row => row.Notes || '', grow: 6 },
+    ...(filteredTemplate?.fields ?? []).map((field): TableColumn<DataRow> => ({
+      name: field.name,
+      selector: row => displayFieldValue(row.data?.[field.id]),
+      sortable: true,
+      grow: 3,
+    })),
   ];
 
   const handleValuesChange = (values: formValues) => {

@@ -37,6 +37,8 @@ describe('IdsView', () => {
   test('a blank required field blocks Update and shows a message', async () => {
     render(<IdsView selectedId="aaaa0001" limit={100} />, { wrapper: withPouch(db) });
     const ownerInput = await screen.findByLabelText('Owner') as HTMLInputElement;
+    // The stored value lands one effect after the field renders; clearing an already empty input is not a change.
+    await waitFor(() => expect(ownerInput.value).toBe('Sam'));
     await act(async () => { fireEvent.change(ownerInput, { target: { value: '' } }); });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Update' })); });
     expect(await screen.findByText('Owner is required')).toBeTruthy();
@@ -55,5 +57,17 @@ describe('IdsView', () => {
     await act(async () => { fireEvent.change(filter, { target: { value: 'none' } }); });
     await waitFor(() => expect(screen.queryByText('untagged')).toBeNull());
     expect(screen.getByText('tagged')).toBeTruthy();
+  });
+
+  test('filtering by a template adds a column per field with each record\'s value', async () => {
+    render(<IdsView selectedId="" limit={100} />, { wrapper: withPouch(db) });
+    await screen.findByText('untagged');
+    expect(screen.queryByText('Owner')).toBeNull();
+    const filter = screen.getByLabelText('Filter by template') as HTMLSelectElement;
+    await act(async () => { fireEvent.change(filter, { target: { value: 'template_asset' } }); });
+    expect(await screen.findByText('Owner')).toBeTruthy();
+    expect(await screen.findByText('Sam')).toBeTruthy();
+    await act(async () => { fireEvent.change(filter, { target: { value: 'all' } }); });
+    await waitFor(() => expect(screen.queryByText('Owner')).toBeNull());
   });
 });
