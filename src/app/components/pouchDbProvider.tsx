@@ -12,7 +12,6 @@ export default function pouchDbProvider({ children }: Readonly<{
     children: React.ReactNode;
   }> ) {
   return (
-         // @ts-expect-error provider is third party and isn't typed correctly
         <Provider pouchdb={db}>
             <>{children}</>
         </Provider>
