@@ -1,5 +1,6 @@
 import React, { JSX, useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { formField, pouchDoc } from "../../utils/types";
 
 interface FormViewerProps {
@@ -12,7 +13,7 @@ interface FormViewerProps {
   
 export default function FormViewer(props:FormViewerProps):JSX.Element {
     const { children, formActionHandler = ()=>{}, inputFocusHandler = ()=>{}, fields, formDoc = {}} = props;
-    const [ formdata, setFormData ] = useState({});
+    const [ formdata, setFormData ] = useState<Record<string, unknown>>(formDoc || {});
     const [ updating, setUpdating ] = useState(false);
     const templateFields:formField[] = fields || [];
 
@@ -24,10 +25,14 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         return false;
     }
 
+    const storedValue = (key:string) => {
+        const value = (formDoc as Record<string, unknown>)[key];
+        return typeof value === 'string' ? value : '';
+    }
+
     const fieldValue = (key:string) => {
-        const keyTyped = key as keyof typeof formdata;
-        const value = formdata[keyTyped];
-        return value ||'';
+        const value = formdata[key];
+        return typeof value === 'string' ? value : '';
     }
 
     const inputField = (fieldItem:formField) => {
@@ -46,18 +51,28 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     />;
                 break;
             case 'select':
-                element = <select
-                    name={name}
-                    value={fieldValue(name)}
-                    onBlur={() => inputFocusHandler(true)}
-                    onFocus={() => inputFocusHandler(false)}
-                    onChange={(event) => fieldChangeHandler(event)}
-                    className={`bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-fit p-2.5 ${tailwind}`}
-                    >
-                    {(fieldItem.options || []).map((option) => (
-                        <option key={option.value} value={option.value}>{option.name}</option>
-                    ))}
-                </select>;
+                // Uncontrolled on purpose. On macOS the native popup is a separate
+                // window, and if React rewrites a controlled select while it is open,
+                // Chrome discards the pick. The key remounts it only when the stored
+                // value changes, such as after a save. No focus reporting either, so
+                // opening the popup does not re-render the page.
+                element = <div className="relative w-60">
+                    <select
+                        key={`${name}_${storedValue(name)}`}
+                        name={name}
+                        defaultValue={fieldValue(name)}
+                        onChange={(event) => fieldChangeHandler(event)}
+                        className={`appearance-none bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5 pr-12 ${tailwind}`}
+                        >
+                        {(fieldItem.options || []).map((option) => (
+                            <option key={option.value} value={option.value}>{option.name}</option>
+                        ))}
+                    </select>
+                    <ChevronDownIcon
+                        aria-hidden="true"
+                        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-text"
+                    />
+                </div>;
                 break;
             case 'header':
                 element = <div className="pt-6"><h2 className="text-2xl font-bold">{name}</h2><p>{caption}</p></div>;
@@ -70,7 +85,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     onBlur={() => inputFocusHandler(true)}
                     onFocus={() => inputFocusHandler(false)}
                     onChange={(event) => fieldChangeHandler(event)}
-                    className={`bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-fit p-2.5 ${tailwind}`}
+                    className={`bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-60 p-2.5 ${tailwind}`}
                     type={inputType}
                     />;
                 break;
@@ -112,7 +127,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
         event.preventDefault();
         setUpdating(true);
         if (formActionHandler) {
-            const payload = formdata || {};
+            const payload = formdata as { [key: string]: string };
             formActionHandler(payload, setUpdating);
         }
         return false;
@@ -130,7 +145,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
             {templateFields.map((fieldItem:formField) => {
                 return inputField(fieldItem)
             })}
-                <div className="p-4 w-full flex justify-center">
+                <div className="py-4">
                     <Form.Submit asChild>
                         <button 
                         disabled={updating}

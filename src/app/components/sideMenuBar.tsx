@@ -19,7 +19,7 @@ interface SideMenuBarProps {
     const { children, screenActionHandler, scanReady = false, selected} = props;
   
     return (
-      <div className={`h-screen min-h-screen w-[75px] bg-sidebar`}>
+      <div className={`min-h-screen self-stretch w-[75px] bg-sidebar`}>
         <div className="min-w-[50px] min-h-[50px] flex justify-center items-center ">
           <ReadyLight enabled={scanReady} />
         </div>

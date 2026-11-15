@@ -27,7 +27,7 @@ const settingsFields:formField[] = [
     options: THEME_OPTIONS,
   },
   {
-    name: "GENERAL", inputType: "none", fieldType: "header", tailwind:"text-center",
+    name: "DATA STORAGE", inputType: "none", fieldType: "header", tailwind:"text-center",
     caption: "Storage limits.",
   },
   {
