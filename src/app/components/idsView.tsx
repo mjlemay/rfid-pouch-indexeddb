@@ -2,7 +2,8 @@ import React, { JSX, useEffect } from 'react';
 import { useDoc, useFind } from 'use-pouchdb';
 import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
 import FormViewer from './formViewer';
-import DataTable, { createTheme, TableColumn } from 'react-data-table-component';
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
 import { pouchDocItem } from '@/utils/types';
 
 interface IdsViewProps {
@@ -17,27 +18,6 @@ interface DataRow {
   [key: string]: string
 }
 
-createTheme('dark', {
-  text: {
-    primary: '#fff',
-    secondary: '#fff',
-  },
-  background: {
-    default: 'rgba(0,0,0,0)',
-  },
-  context: {
-    background: 'rgba(255,255,255,.5)',
-    text: '#fff',
-  },
-  divider: {
-    default: 'rgba(255,255,255,.25)',
-  },
-  action: {
-    button: 'rgba(0,0,0,.54)',
-    hover: 'rgba(0,0,0,.08)',
-    disabled: 'rgba(0,0,0,.12)',
-  },
-});
   
 
 
@@ -101,7 +81,7 @@ createTheme('dark', {
     return (
       <div className='flex flex-col h-full w-full'
       >
-        <div className='border border-neutral-800 bg-gradient-to-b from-black border-1 grow rounded-lg p-4 m-10 h-full'>
+        <div className='border border-line bg-surface grow rounded-lg p-4 m-10 h-full'>
           {!loading && doc && (
             <>
               <h1 className="font-medium text-3xl">Details for {doc && name}({_id})</h1>
@@ -128,7 +108,7 @@ createTheme('dark', {
           data={docs as unknown as DataRow[]}
           keyField="date"
           defaultSortFieldId="date"
-          theme="dark"
+          theme={DATA_TABLE_THEME}
           pagination
           onRowClicked={(row:DataRow)=>{selectRowHandler(row._id)}}
         />)}

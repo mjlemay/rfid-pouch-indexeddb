@@ -16,7 +16,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     const [ updating, setUpdating ] = useState(false);
     const templateFields:formField[] = fields || [];
 
-    const fieldChangeHandler = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const fieldChangeHandler = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { value, name } = event.target;
         const changeFormData = JSON.parse(JSON.stringify(formdata));
         changeFormData[`${name}`] = value;
@@ -42,8 +42,22 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     onBlur={() => inputFocusHandler(true)}
                     onFocus={() => inputFocusHandler(false)}
                     onChange={(event) => fieldChangeHandler(event)}
-                    className={`block w-full bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 ${tailwind}`}
+                    className={`block w-full bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent p-2.5 ${tailwind}`}
                     />;
+                break;
+            case 'select':
+                element = <select
+                    name={name}
+                    value={fieldValue(name)}
+                    onBlur={() => inputFocusHandler(true)}
+                    onFocus={() => inputFocusHandler(false)}
+                    onChange={(event) => fieldChangeHandler(event)}
+                    className={`bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-fit p-2.5 ${tailwind}`}
+                    >
+                    {(fieldItem.options || []).map((option) => (
+                        <option key={option.value} value={option.value}>{option.name}</option>
+                    ))}
+                </select>;
                 break;
             case 'header':
                 element = <div className="pt-6"><h2 className="text-2xl font-bold">{name}</h2><p>{caption}</p></div>;
@@ -56,7 +70,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     onBlur={() => inputFocusHandler(true)}
                     onFocus={() => inputFocusHandler(false)}
                     onChange={(event) => fieldChangeHandler(event)}
-                    className={`bg-neutral-800 border border-neutral-600 text-neutral-100 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 ${tailwind}`}
+                    className={`bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-fit p-2.5 ${tailwind}`}
                     type={inputType}
                     />;
                 break;
@@ -81,7 +95,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                         <Form.Label className="text-xl font-bold">{name}</Form.Label>
                     </div>
                     <div className={`self-center ${fieldType === 'textarea' && 'grow'}`}>
-                        <Form.Control asChild className="text-black text-lg">
+                        <Form.Control asChild className="text-lg">
                             {element}
                         </Form.Control>
                     </div>
@@ -120,7 +134,7 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                     <Form.Submit asChild>
                         <button 
                         disabled={updating}
-                        className={`bg-neutral-500 border ${updating && 'opacity-50'} border-neutral-600 text-neutral-100 text-xl rounded-lg block w-80 p-2.5`}
+                        className={`bg-control border ${updating ? 'opacity-50' : ''} border-line text-control-text text-xl rounded-lg block w-80 p-2.5`}
                         onClick={(event:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>submitForm(event)}>Update</button>
                     </Form.Submit>
                 </div>
