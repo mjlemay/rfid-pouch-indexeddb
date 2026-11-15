@@ -35,6 +35,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Reminders
 
 - As the data is stored via the browser, make sure you use the same browser each time!
-- For better performance, make sure you update the settings the mode for your read/writer device in settings.
-
-
+- Tune the RFID timing values in Settings to match your RFID USB reader.

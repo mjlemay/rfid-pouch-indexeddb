@@ -5,7 +5,7 @@ import {
   RfidParserConfig,
 } from "../../utils/rfidKeystrokeParser";
 
-// Listens for keyboard-wedge RFID reader input on the window and returns the
+// Listens for USB RFID reader input on the window and returns the
 // most recent tag id. The id is cleared when the next scan begins so that
 // scanning the same tag twice in a row is reported both times.
 export function useRFIDNumber(enabled: boolean, config: RfidParserConfig = DEFAULT_RFID_PARSER_CONFIG) {

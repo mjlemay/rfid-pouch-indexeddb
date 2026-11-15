@@ -8,7 +8,6 @@ import InputsView from './components/inputsView';
 import SettingsView from './components/settingsView';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
-import { usePCSCItem } from './hooks/usePCSCItem';
 import { useAddUpdateRecordData } from './hooks/useUpdateRecordData';
 import { useDoc } from 'use-pouchdb';
 import {
@@ -18,7 +17,6 @@ import {
   CPS_MIN,
   CPS_MAX,
   ID_LENGTH,
-  DEVICE_TYPE
 } from "../utils/consts";
 import { pouchDocItem } from "../utils/types";
 import { DEFAULT_RFID_PARSER_CONFIG, parserConfigFromSettings } from "../utils/rfidKeystrokeParser";
@@ -29,7 +27,6 @@ export default function Home() {
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
   const [ numReady, setnumReady ] = useState(true);
-  const [ itemReady, setItemReady ] = useState(true);
   const addUpdateRecordData = useAddUpdateRecordData();
   const { 
     doc: settingsDoc,
@@ -44,7 +41,6 @@ const rfidParserConfig = useMemo(
   [pouchSettingsDoc],
 );
 const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
-const pcscItem = usePCSCItem(itemReady);
   
 
   const handleAction = (action:string) => {
@@ -78,7 +74,6 @@ const pcscItem = usePCSCItem(itemReady);
         // create a new record if one does not exist
         const defaultSettings = {
           _id: 'app_settings',
-          DEVICE_TYPE: `${DEVICE_TYPE}`,
           RECORD_LIMIT: `${RECORD_LIMIT}`,
           LOG_LIMIT: `${LOG_LIMIT}`,
           WAIT: `${WAIT}`,
