@@ -8,6 +8,7 @@ import { formField, formValues } from '../../utils/types';
 import { useSaveDocument } from '../hooks/useSaveDocument';
 import { useSaveRecord } from '../hooks/useSaveRecord';
 import { useTemplates } from '../hooks/useTemplates';
+import { useStableValue } from '../hooks/useStableValue';
 import {
   FieldValue,
   NO_TEMPLATE_LABEL,
@@ -61,7 +62,8 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
   const hasSelectedId = selectedId !== '';
   // PouchDB rejects an empty id outright, so ask for a placeholder that simply does not exist.
   const { doc, loading, state, error } = useDoc(hasSelectedId ? selectedId : 'record_none_selected');
-  const record = hasSelectedId ? (doc as RecordDoc | null) : null;
+  // Keep one record identity per revision so re-emissions do not reset the form draft.
+  const record = useStableValue(hasSelectedId ? (doc as RecordDoc | null) : null, (previous, next) => previous?._id === next?._id && previous?._rev === next?._rev);
 
   // The template whose fields the form shows follows the dropdown, not the saved value.
   const [draftTemplateId, setDraftTemplateId] = useState<string>('');

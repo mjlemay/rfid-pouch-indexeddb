@@ -20,8 +20,9 @@ describe('IdsView', () => {
 
   test('choosing a template shows its fields, and Update saves the values', async () => {
     render(<IdsView selectedId="5eef2a29" limit={100} />, { wrapper: withPouch(db) });
+    // Wait for the template list before grabbing the select, which remounts when its options arrive.
+    await screen.findAllByRole('option', { name: 'Asset Tag' });
     const templateSelect = await screen.findByLabelText('Template') as HTMLSelectElement;
-    await screen.findByRole('option', { name: 'Asset Tag' });
     await act(async () => { fireEvent.change(templateSelect, { target: { value: 'template_asset' } }); });
     const ownerInput = await screen.findByLabelText('Owner') as HTMLInputElement;
     await act(async () => { fireEvent.change(ownerInput, { target: { value: 'Alex' } }); });

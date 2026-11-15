@@ -88,3 +88,28 @@ describe('FormViewer typed fields', () => {
     expect(screen.getByText('Owner is required')).toBeTruthy();
   });
 });
+
+describe('FormViewer document updates', () => {
+  const textFields: formField[] = [
+    { name: 'Notes', inputType: 'text', fieldType: 'textarea' },
+    { name: 'Extra', inputType: 'text', fieldType: 'input' },
+  ];
+
+  test('a document update with the same revision keeps fields the user has edited', () => {
+    const first = { _rev: '1-a', Notes: 'stored', Extra: '' } as never;
+    const { rerender } = render(<FormViewer fields={textFields} formDoc={first} />);
+    const notes = screen.getByLabelText('Notes') as HTMLTextAreaElement;
+    fireEvent.change(notes, { target: { value: 'edited' } });
+    rerender(<FormViewer fields={textFields} formDoc={{ _rev: '1-a', Notes: 'stored', Extra: 'added later' } as never} />);
+    expect((screen.getByLabelText('Notes') as HTMLTextAreaElement).value).toBe('edited');
+    expect((screen.getByLabelText('Extra') as HTMLInputElement).value).toBe('added later');
+  });
+
+  test('a document with a new revision replaces everything, including edits', () => {
+    const first = { _rev: '1-a', Notes: 'stored', Extra: '' } as never;
+    const { rerender } = render(<FormViewer fields={textFields} formDoc={first} />);
+    fireEvent.change(screen.getByLabelText('Notes'), { target: { value: 'edited' } });
+    rerender(<FormViewer fields={textFields} formDoc={{ _rev: '2-b', Notes: 'saved', Extra: '' } as never} />);
+    expect((screen.getByLabelText('Notes') as HTMLTextAreaElement).value).toBe('saved');
+  });
+});

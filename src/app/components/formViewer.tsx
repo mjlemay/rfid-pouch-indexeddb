@@ -1,4 +1,4 @@
-import React, { JSX, useState, useEffect } from "react";
+import React, { JSX, useState, useEffect, useRef } from "react";
 import * as Form from "@radix-ui/react-form";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { formField, formValues, pouchDoc } from "../../utils/types";
@@ -18,11 +18,17 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     const [ formdata, setFormData ] = useState<formValues>(formDoc || {});
     const [ updating, setUpdating ] = useState(false);
     const templateFields:formField[] = fields || [];
+    // Keys the user has changed since the last saved revision. A document
+    // update with the same revision (new template fields, a re-emission) keeps
+    // these; a new revision means a save happened and everything resets.
+    const dirtyKeys = useRef(new Set<string>());
+    const lastRevision = useRef((formDoc as { _rev?: string } | undefined)?._rev);
 
     const fieldChangeHandler = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const target = event.target;
         const value = target instanceof HTMLInputElement && target.type === 'checkbox' ? target.checked : target.value;
         const changeFormData = { ...formdata, [target.name]: value };
+        dirtyKeys.current.add(target.name);
         setFormData(changeFormData);
         onValuesChange?.(changeFormData);
         return false;
@@ -59,10 +65,10 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 // Uncontrolled on purpose. On macOS the native popup is a separate
                 // window, and if React rewrites a controlled select while it is open,
                 // Chrome discards the pick. The key remounts it only when the stored
-                // value changes, such as after a save. No focus reporting either, so
+                // value or option list changes, such as after a save. No focus reporting either, so
                 // opening the popup does not re-render the page.
                 element = <select
-                    key={`${name}_${storedValue(name)}`}
+                    key={`${name}_${storedValue(name)}_${(fieldItem.options || []).map((option) => option.value).join('|')}`}
                     name={name}
                     defaultValue={fieldValue(name)}
                     onChange={(event) => fieldChangeHandler(event)}
@@ -167,9 +173,21 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
     }
 
     useEffect(()=>{
-        if (formDoc) {
+        if (!formDoc) return;
+        const revision = (formDoc as { _rev?: string })._rev;
+        if (revision !== lastRevision.current) {
+            lastRevision.current = revision;
+            dirtyKeys.current.clear();
             setFormData(formDoc);
+            return;
         }
+        setFormData((previous) => {
+            const next: formValues = { ...formDoc };
+            for (const key of dirtyKeys.current) {
+                if (key in previous) next[key] = previous[key];
+            }
+            return next;
+        });
     },[formDoc])
 
     return (
