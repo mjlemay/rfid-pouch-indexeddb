@@ -57,3 +57,50 @@ describe('Settings appearance round trip', () => {
     await waitFor(() => expect(document.documentElement.getAttribute('data-theme')).toBe('gold'));
   });
 });
+
+describe('Templates end to end', () => {
+  let db: PouchDB.Database;
+  beforeEach(async () => {
+    db = makeTestDatabase();
+    await db.put({ _id: 'app_settings', type: 'setting', RECORD_LIMIT: '1000', LOG_LIMIT: '1000', WAIT: '300', CPS_MIN: '0', CPS_MAX: '30', ID_LENGTH: '8' });
+    await db.put({ _id: '5eef2a29', type: 'record', Notes: '' });
+  });
+  afterEach(async () => { await db.destroy(); });
+
+  // Nav order is ids, logs, inputs (templates), settings; the ready light has no svg.
+  // Scoped to the sidebar because views render their own icons too.
+  function clickNav(indexFromEnd: number) {
+    const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
+    fireEvent.click(navButtons[navButtons.length - indexFromEnd].parentElement!);
+  }
+
+  test('create a template, assign it to a record, save a value, and see the change in the log', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
+
+    await act(async () => { clickNav(2); });
+    const newButton = await screen.findByRole('button', { name: 'New template' });
+    await act(async () => { fireEvent.click(newButton); });
+    await act(async () => { fireEvent.change(await screen.findByLabelText('Template name'), { target: { value: 'Asset Tag' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Add field' })); });
+    await act(async () => { fireEvent.change(screen.getByLabelText('Field 1 name'), { target: { value: 'Owner' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Save template' })); });
+    await waitFor(async () => expect((await db.find({ selector: { type: 'template' } })).docs).toHaveLength(1));
+    const templateId = (await db.find({ selector: { type: 'template' } })).docs[0]._id;
+
+    await act(async () => { clickNav(4); });
+    const recordRow = await screen.findByText('5eef2a29');
+    await act(async () => { fireEvent.click(recordRow); });
+    await screen.findAllByRole('option', { name: 'Asset Tag' });
+    const templateSelect = await screen.findByLabelText('Template') as HTMLSelectElement;
+    await act(async () => { fireEvent.change(templateSelect, { target: { value: templateId } }); });
+    const ownerInput = await screen.findByLabelText('Owner');
+    await act(async () => { fireEvent.change(ownerInput, { target: { value: 'Alex' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Update' })); });
+    await waitFor(async () => expect((await db.find({ selector: { type: 'change' } })).docs).toHaveLength(1));
+
+    await act(async () => { clickNav(3); });
+    expect(await screen.findByText('Owner: → Alex')).toBeTruthy();
+    expect(await screen.findByText('Template: No template → Asset Tag')).toBeTruthy();
+  });
+});

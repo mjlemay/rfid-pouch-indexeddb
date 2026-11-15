@@ -125,13 +125,20 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
       return;
     }
     setErrors({});
-    await saveRecord({ _id: selectedId, Notes: typeof payload.Notes === 'string' ? payload.Notes : '', templateId, data }, templates);
+    try {
+      await saveRecord({ _id: selectedId, Notes: typeof payload.Notes === 'string' ? payload.Notes : '', templateId, data }, templates);
+    } catch (saveError) {
+      console.error('record save failed', saveError);
+      setErrors({ Notes: 'Could not save. Try again.' });
+    }
     callback(false);
   };
 
   useEffect(()=>{
-    if (hasSelectedId && error && JSON.stringify(error).includes('404')) {
-      // create a new record if one does not exist
+    // Create the record on first visit. The error must be for the current id;
+    // right after a selection change it can still describe the previous one.
+    const missing = error as { status?: number; docId?: string } | null;
+    if (hasSelectedId && missing?.status === 404 && missing.docId === selectedId) {
       saveDocument({ _id: selectedId, type: 'record' });
     }
   },[saveDocument, error, hasSelectedId, selectedId, state]);
