@@ -113,6 +113,7 @@ useApplyAppearance(appearance);
           />}
           {view == 'logs' && <LogsView
             actionHandler={handleAction}
+            limit={parseInt(pouchSettingsDoc.LOG_LIMIT as string) || 1000}
             selectRowHandler={(scanId) => { setSelectedId(scanId); setView('ids'); }}
           />}
           {view == 'inputs' && <TemplatesView inputFocusHandler={handleFocusChange} />}
