@@ -67,10 +67,13 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 // Chrome discards the pick. The key remounts it only when the stored
                 // value or option list changes, such as after a save. No focus reporting either, so
                 // opening the popup does not re-render the page.
+                // The default comes from the document, not form state, because the
+                // select can remount in the same render that changed the document,
+                // one effect before form state catches up. A user edit still wins.
                 element = <select
                     key={`${name}_${storedValue(name)}_${(fieldItem.options || []).map((option) => option.value).join('|')}`}
                     name={name}
-                    defaultValue={fieldValue(name)}
+                    defaultValue={dirtyKeys.current.has(name) ? fieldValue(name) : storedValue(name)}
                     onChange={(event) => fieldChangeHandler(event)}
                     className={`appearance-none bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5 pr-12 ${tailwind}`}
                     >

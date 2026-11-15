@@ -89,4 +89,10 @@ describe('IdsView', () => {
     await waitFor(() => expect((screen.getByLabelText('Filter by template') as HTMLSelectElement).value).toBe('template_asset'));
     expect(screen.queryByText('tagged')).toBeNull();
   });
+
+  test('the Template dropdown shows the stored template once templates load', async () => {
+    render(<IdsView selectedId="aaaa0001" limit={100} />, { wrapper: withPouch(db) });
+    await screen.findByLabelText('Owner');
+    await waitFor(() => expect((screen.getByLabelText('Template') as HTMLSelectElement).value).toBe('template_asset'));
+  });
 });
