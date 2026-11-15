@@ -61,23 +61,17 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                 // Chrome discards the pick. The key remounts it only when the stored
                 // value changes, such as after a save. No focus reporting either, so
                 // opening the popup does not re-render the page.
-                element = <div className="relative w-60">
-                    <select
-                        key={`${name}_${storedValue(name)}`}
-                        name={name}
-                        defaultValue={fieldValue(name)}
-                        onChange={(event) => fieldChangeHandler(event)}
-                        className={`appearance-none bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5 pr-12 ${tailwind}`}
-                        >
-                        {(fieldItem.options || []).map((option) => (
-                            <option key={option.value} value={option.value}>{option.name}</option>
-                        ))}
-                    </select>
-                    <ChevronDownIcon
-                        aria-hidden="true"
-                        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-text"
-                    />
-                </div>;
+                element = <select
+                    key={`${name}_${storedValue(name)}`}
+                    name={name}
+                    defaultValue={fieldValue(name)}
+                    onChange={(event) => fieldChangeHandler(event)}
+                    className={`appearance-none bg-raised border border-line text-text text-xl rounded-lg focus:ring-accent focus:border-accent block w-full p-2.5 pr-12 ${tailwind}`}
+                    >
+                    {(fieldItem.options || []).map((option) => (
+                        <option key={option.value} value={option.value}>{option.name}</option>
+                    ))}
+                </select>;
                 break;
             case 'boolean':
                 element = <input
@@ -136,9 +130,21 @@ export default function FormViewer(props:FormViewerProps):JSX.Element {
                         <Form.Label className="text-xl font-bold">{label ?? name}</Form.Label>
                     </div>
                     <div className={`self-center ${fieldType === 'textarea' ? 'grow' : ''}`}>
-                        <Form.Control asChild className="text-lg">
-                            {element}
-                        </Form.Control>
+                        {fieldType === 'select' ? (
+                            <div className="relative w-60">
+                                <Form.Control asChild className="text-lg">
+                                    {element}
+                                </Form.Control>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-text"
+                                />
+                            </div>
+                        ) : (
+                            <Form.Control asChild className="text-lg">
+                                {element}
+                            </Form.Control>
+                        )}
                         {errors[name] && (<p className="text-sm pt-1 text-accent">{errors[name]}</p>)}
                     </div>
                     {caption && (<div className="self-center text-sm font-thin max-w-80">
