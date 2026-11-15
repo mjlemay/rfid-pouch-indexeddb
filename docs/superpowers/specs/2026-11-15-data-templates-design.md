@@ -113,7 +113,7 @@ The form component gains `boolean` and `number` field types and per-field error 
 
 ### Recent Records filter
 
-A dropdown to the right of the "Recent Records" heading with All, No template, and each template. The find query uses `recordFilterSelector`. The table columns stay ID and Notes. The filter resets to All when the page is reopened.
+A dropdown to the right of the "Recent Records" heading with All, No template, and each template. The find query uses `recordFilterSelector`. With a template selected the table adds one column per field between ID and Notes. The last choice is remembered per browser in local storage; a remembered template that no longer exists falls back to All.
 
 ### Logs page
 
