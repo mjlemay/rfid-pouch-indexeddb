@@ -11,18 +11,10 @@ interface SettingsViewProps {
   inputFocusHandler?:(arg0?:boolean) => void;
 }
 
-const RFIDsettings:formField[] = [
-  {
-    name: "DEVICE_TYPE", inputType: "select", fieldType: "select", tailwind:"text-center",
-    caption: "Select the type of RFID reader you are using. If you are unsure, select 'RFID'",
-    options: [
-      {name: "RFID", value: "rfid"},
-      {name: "NFC-PCSP", value: "pcsp"},
-    ]
-  },
+const settingsFields:formField[] = [
   {
     name: "RECORD_LIMIT", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Max number of records to keep. Reduce  this if app becomes less performant",
+    caption: "Max number of records to keep. Reduce this if app becomes less performant",
   },
   {
     name: "LOG_LIMIT", inputType: "text", fieldType: "input", tailwind:"text-center",
@@ -30,42 +22,23 @@ const RFIDsettings:formField[] = [
   },
   {
     name: "RFID SETTINGS", inputType: "none", fieldType: "header", tailwind:"text-center",
-    caption: "These Settings Only Apply when DEVICE_TYPE is set to RFID.",
-    condition: {field: "DEVICE_TYPE", value: "rfid"},
+    caption: "Timing and format of the keyboard-wedge RFID reader.",
   },
   {
     name: "WAIT", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Delay to clear up RFID read data in miliseconds",
-    condition: {field: "DEVICE_TYPE", value: "rfid"},
+    caption: "Pause in milliseconds that marks the start of a new scan",
   },
   {name: "CPS_MIN", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Slowest speed the card reads inputs a character per millisecond",
-    condition: {field: "DEVICE_TYPE", value: "rfid"},
+    caption: "Shortest gap in milliseconds between characters that counts as reader input",
   },
   {name: "CPS_MAX", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Fastest speed the card reads inputs a character per millisecond",
-    condition: {field: "DEVICE_TYPE", value: "rfid"},
+    caption: "Longest gap in milliseconds between characters that counts as reader input",
   },
   {name: "ID_LENGTH", inputType: "text", fieldType: "input", tailwind:"text-center",
     caption: "Number of characters the reader renders the serial number as, possibly 8 or 10",
-    condition: {field: "DEVICE_TYPE", value: "rfid"},
-  },
-  {
-    name: "NFC-PCSP SETTINGS", inputType: "none", fieldType: "header", tailwind:"text-center",
-    caption: "These Settings Only Aply for when DEVICE_TYPE is set to NFC-PCSP",
-    condition: {field: "DEVICE_TYPE", value: "pcsp"},
-  },
-  {name:"SECTOR_ID", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Sector to read/write data from/to",
-    condition: {field: "DEVICE_TYPE", value: "pcsp"},
-  },
-  {name:"SECTOR_KEY", inputType: "text", fieldType: "input", tailwind:"text-center",
-    caption: "Key for previous sector",
-    condition: {field: "DEVICE_TYPE", value: "pcsp"},
   },
 ]
 
-  
 export default function SettingsView(props:SettingsViewProps):JSX.Element {
   const { children, settingsDoc, loading, inputFocusHandler = ()=>{} } = props;
   const addUpdateRecordData = useAddUpdateRecordData();
@@ -83,7 +56,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
         <h1 className="font-medium text-4xl">Settings</h1>
         {!loading && settingsDoc && (
           <FormViewer
-            fields={RFIDsettings}
+            fields={settingsFields}
             formDoc={settingsDoc}
             inputFocusHandler={inputFocusHandler}
             formActionHandler={handleRecordUpdate}
