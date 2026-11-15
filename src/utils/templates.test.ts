@@ -3,6 +3,7 @@ import {
   createField,
   createTemplate,
   diffRecord,
+  moveField,
   parseFieldValue,
   recordFilterSelector,
   recordFormValues,
@@ -165,5 +166,23 @@ describe('recordFilterSelector', () => {
       type: 'record',
       $or: [{ templateId: { $exists: false } }, { templateId: { $nin: known } }],
     });
+  });
+});
+
+describe('moveField', () => {
+  const fields = [owner, inService, qty];
+
+  test('moves a field up one place', () => {
+    expect(moveField(fields, 'f_qty', 'up').map((field) => field.id)).toEqual(['f_owner', 'f_qty', 'f_service']);
+  });
+
+  test('moves a field down one place', () => {
+    expect(moveField(fields, 'f_owner', 'down').map((field) => field.id)).toEqual(['f_service', 'f_owner', 'f_qty']);
+  });
+
+  test('leaves the list alone at the ends or for an unknown id', () => {
+    expect(moveField(fields, 'f_owner', 'up')).toEqual(fields);
+    expect(moveField(fields, 'f_qty', 'down')).toEqual(fields);
+    expect(moveField(fields, 'f_missing', 'up')).toEqual(fields);
   });
 });

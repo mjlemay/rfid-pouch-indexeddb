@@ -127,7 +127,7 @@ Clicking either row opens that record.
 ## Not in scope
 
 - Field types beyond text, number and boolean.
-- Reordering fields by drag. Fields keep insertion order; a field can be removed and re-added.
+- Reordering fields by drag. Each field row has Up and Down buttons instead.
 - Per-template columns in the Recent Records table.
 - Migrating values when a field's type changes. Changing a type keeps the stored value and the form shows it through the new input.
 - Undo of template deletion.

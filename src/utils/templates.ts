@@ -73,6 +73,17 @@ export function createField(name: string, fieldType: FieldType): TemplateField {
   return { id: generateId('f'), name, fieldType, caption: '', required: false, defaultValue: defaultValueFor(fieldType) };
 }
 
+// Returns a new field list with the given field moved one place up or down.
+// The list is returned unchanged at the ends or when the id is unknown.
+export function moveField(fields: TemplateField[], fieldId: string, direction: 'up' | 'down'): TemplateField[] {
+  const index = fields.findIndex((field) => field.id === fieldId);
+  const target = direction === 'up' ? index - 1 : index + 1;
+  if (index === -1 || target < 0 || target >= fields.length) return fields;
+  const next = [...fields];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+}
+
 export function validateTemplate(template: TemplateDoc): TemplateProblem[] {
   const problems: TemplateProblem[] = [];
   if (template.name.trim() === '') {

@@ -77,4 +77,18 @@ describe('TemplatesView', () => {
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Yes, delete' })); });
     await waitFor(async () => expect(await templatesInDb()).toHaveLength(0));
   });
+
+  test('up and down arrows reorder fields and are disabled at the ends', async () => {
+    const template = { ...createTemplate('Asset Tag', 'now'), fields: [createField('Owner', 'text'), createField('Qty', 'number')] };
+    await db.put(template);
+    render(<TemplatesView />, { wrapper: withPouch(db) });
+    const templateButton = await screen.findByRole('button', { name: 'Asset Tag' });
+    await act(async () => { fireEvent.click(templateButton); });
+    await screen.findByLabelText('Field 2 name');
+    expect((screen.getByRole('button', { name: 'Move field 1 up' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: 'Move field 2 down' }) as HTMLButtonElement).disabled).toBe(true);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Move field 2 up' })); });
+    expect((screen.getByLabelText('Field 1 name') as HTMLInputElement).value).toBe('Qty');
+    expect((screen.getByLabelText('Field 2 name') as HTMLInputElement).value).toBe('Owner');
+  });
 });

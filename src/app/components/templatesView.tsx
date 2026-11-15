@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from 'react';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { useTemplates } from '../hooks/useTemplates';
 import {
   createField,
@@ -7,6 +7,7 @@ import {
   defaultValueFor,
   FIELD_TYPE_OPTIONS,
   FieldType,
+  moveField,
   TemplateDoc,
   TemplateField,
   TemplateProblem,
@@ -85,6 +86,11 @@ export default function TemplatesView(props: TemplatesViewProps): JSX.Element {
     setDraft({ ...draft, fields: draft.fields.filter((field) => field.id !== fieldId) });
   };
 
+  const reorderField = (fieldId: string, direction: 'up' | 'down') => {
+    if (!draft) return;
+    setDraft({ ...draft, fields: moveField(draft.fields, fieldId, direction) });
+  };
+
   const save = async () => {
     if (!draft) return;
     const found = validateTemplate(draft);
@@ -157,7 +163,8 @@ export default function TemplatesView(props: TemplatesViewProps): JSX.Element {
               {problemFor(undefined) && <span className="text-sm text-accent">{problemFor(undefined)}</span>}
             </label>
 
-            <div className="grid grid-cols-[1.4fr_1fr_1.4fr_auto_1fr_auto] gap-3 items-center">
+            <div className="grid grid-cols-[auto_1.4fr_1fr_1.4fr_auto_1fr_auto] gap-3 items-center">
+              <span className="text-sm uppercase tracking-wide opacity-70">Order</span>
               <span className="text-sm uppercase tracking-wide opacity-70">Field</span>
               <span className="text-sm uppercase tracking-wide opacity-70">Type</span>
               <span className="text-sm uppercase tracking-wide opacity-70">Caption</span>
@@ -166,6 +173,26 @@ export default function TemplatesView(props: TemplatesViewProps): JSX.Element {
               <span></span>
               {draft.fields.map((field, index) => (
                 <React.Fragment key={field.id}>
+                  <span className="flex flex-col gap-1">
+                    <button
+                      type="button"
+                      aria-label={`Move field ${index + 1} up`}
+                      disabled={index === 0}
+                      onClick={() => reorderField(field.id, 'up')}
+                      className={`${ghostButtonClass} px-2 py-1 disabled:opacity-30`}
+                    >
+                      <ChevronUpIcon aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move field ${index + 1} down`}
+                      disabled={index === draft.fields.length - 1}
+                      onClick={() => reorderField(field.id, 'down')}
+                      className={`${ghostButtonClass} px-2 py-1 disabled:opacity-30`}
+                    >
+                      <ChevronDownIcon aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                  </span>
                   <div className="flex flex-col gap-1">
                     <input aria-label={`Field ${index + 1} name`} type="text" value={field.name} onChange={(event) => updateField(field.id, { name: event.target.value })} className={`${inputClass} w-full`} {...focusProps} />
                     {problemFor(field.id) && <span className="text-sm text-accent">{problemFor(field.id)}</span>}
