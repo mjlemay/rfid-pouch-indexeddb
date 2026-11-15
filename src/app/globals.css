@@ -119,7 +119,7 @@
   --color-accent: #f4c2c2;
   --color-muted: #42262a;
   --color-control: #b76e79;
-  --color-control-text: #ffffff;
+  --color-control-text: #160a0b;
 }
 
 [data-theme="silver"] {
@@ -161,7 +161,7 @@
   --color-accent: #fdba74;
   --color-muted: #3f1f0e;
   --color-control: #b87333;
-  --color-control-text: #ffffff;
+  --color-control-text: #150a04;
 }
 
 @media (min-width: 640px) {

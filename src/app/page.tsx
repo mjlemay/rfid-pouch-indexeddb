@@ -101,7 +101,7 @@ useApplyAppearance(appearance);
       className={`flex w-full min-h-screen bg-background text-text select-none`}
     >
       <SideMenuBar selected={view} scanReady={numReady} screenActionHandler={handleAction}  />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col min-w-0">
       <TopBar title={appearance.title} />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>

@@ -63,3 +63,39 @@ describe('globals.css', () => {
     }
   });
 });
+
+// WCAG relative luminance and contrast ratio, so palette changes cannot quietly
+// drop below the minimums for text (4.5:1) and icons (3:1).
+function luminance(hex: string): number {
+  const channel = (value: number) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  const [r, g, b] = [1, 3, 5].map((start) => channel(parseInt(hex.slice(start, start + 2), 16) / 255));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+  const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (high + 0.05) / (low + 0.05);
+}
+
+describe('theme contrast', () => {
+  const css = readFileSync(resolve(__dirname, '../app/globals.css'), 'utf8');
+
+  function tokens(theme: string): Record<string, string> {
+    const blockStart = css.indexOf(`[data-theme="${theme}"]`);
+    const block = css.slice(blockStart, css.indexOf('}', blockStart));
+    return Object.fromEntries(
+      Array.from(block.matchAll(/--color-([\w-]+):\s*(#[0-9a-fA-F]{6})/g), (match) => [match[1], match[2]]),
+    );
+  }
+
+  test.each([...THEME_NAMES])('%s: Update button text reads at 4.5:1 or better on the control color', (theme) => {
+    const palette = tokens(theme);
+    expect(contrast(palette['control-text'], palette.control)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  test.each([...THEME_NAMES])('%s: body text reads at 4.5:1 or better on inputs and the page', (theme) => {
+    const palette = tokens(theme);
+    expect(contrast(palette.text, palette.raised)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(palette.text, palette.background)).toBeGreaterThanOrEqual(4.5);
+  });
+});
