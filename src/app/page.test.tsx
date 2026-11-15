@@ -1,13 +1,8 @@
 // @vitest-environment jsdom
-import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import PouchDB from 'pouchdb-browser';
-import find from 'pouchdb-find';
-import { Provider } from 'use-pouchdb';
+import { makeTestDatabase, withPouch } from '../test/pouch';
 import Home from './page';
-
-PouchDB.plugin(find);
 
 // Drives the real page against a real PouchDB on a fake IndexedDB, so the
 // settings form, the document round trip, and the appearance hook all run.
@@ -15,7 +10,7 @@ describe('Settings appearance round trip', () => {
   let db: PouchDB.Database;
 
   beforeEach(async () => {
-    db = new PouchDB(`settings-test-${Date.now()}-${Math.random()}`);
+    db = makeTestDatabase();
     await db.put({
       _id: 'app_settings',
       type: 'setting',
@@ -29,7 +24,7 @@ describe('Settings appearance round trip', () => {
   });
 
   async function openSettings() {
-    render(<Provider pouchdb={db}><Home /></Provider>);
+    render(<Home />, { wrapper: withPouch(db) });
     await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
     const navButtons = document.querySelectorAll('svg');
     await act(async () => { fireEvent.click(navButtons[navButtons.length - 1].parentElement!); });

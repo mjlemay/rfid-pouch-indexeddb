@@ -1,6 +1,6 @@
 import React, { JSX, useEffect } from 'react';
 import { useDoc, useFind } from 'use-pouchdb';
-import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
+import { useSaveDocument } from '../hooks/useSaveDocument';
 import FormViewer from './formViewer';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
@@ -25,7 +25,7 @@ interface DataRow {
   
   export default function IdsView(props:IdsViewProps):JSX.Element {
     const { children, selectedId = '', limit, inputFocusHandler = ()=>{}, selectRowHandler = ()=>{} } = props;
-    const addUpdateRecordData = useAddUpdateRecordData();
+    const saveDocument = useSaveDocument();
     const hasSelectedId = selectedId !== '';
     const { doc, loading, state, error } = useDoc(selectedId);
     const { name = '', _id } = doc as pouchDocItem || {};
@@ -57,7 +57,7 @@ interface DataRow {
     ];
 
     const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
-      addUpdateRecordData(payload);
+      saveDocument({ ...payload, _id: selectedId, type: 'record' });
       setTimeout(()=>{
         callback(false);
       }, 200);
@@ -69,10 +69,10 @@ interface DataRow {
         console.log('err', state, error);
         if (errorString.includes('404')) {
           // create a new record if one does not exist
-          addUpdateRecordData({_id: selectedId});
+          saveDocument({ _id: selectedId, type: 'record' });
         }
       }
-    },[addUpdateRecordData, error, selectedId, state]);
+    },[saveDocument, error, selectedId, state]);
 
     useEffect(()=>{
       console.log('selectedId', selectedId);

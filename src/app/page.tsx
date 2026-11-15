@@ -10,7 +10,7 @@ import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
 import { useApplyAppearance } from './hooks/useApplyAppearance';
-import { useAddUpdateRecordData } from './hooks/useUpdateRecordData';
+import { useSaveDocument } from './hooks/useSaveDocument';
 import { useDoc } from 'use-pouchdb';
 import {
   RECORD_LIMIT,
@@ -30,7 +30,7 @@ export default function Home() {
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
   const [ numReady, setnumReady ] = useState(true);
-  const addUpdateRecordData = useAddUpdateRecordData();
+  const saveDocument = useSaveDocument();
   const { 
     doc: settingsDoc,
     loading: loadingSettings,
@@ -91,10 +91,10 @@ useApplyAppearance(appearance);
           CPS_MAX: `${CPS_MAX}`,
           ID_LENGTH: `${ID_LENGTH}`
         };
-        addUpdateRecordData(defaultSettings, 'setting');
+        saveDocument({ ...defaultSettings, type: 'setting' });
       }
     }
-  },[addUpdateRecordData, settingsError, settingsState]);
+  },[saveDocument, settingsError, settingsState]);
 
   return (
     <div

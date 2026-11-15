@@ -1,7 +1,7 @@
 import React, { JSX, useMemo } from 'react';
 import FormViewer from './formViewer';
 import { formField, pouchDoc } from "../../utils/types";
-import { useAddUpdateRecordData } from '../hooks/useUpdateRecordData';
+import { useSaveDocument } from '../hooks/useSaveDocument';
 import { DEFAULT_THEME, DEFAULT_TITLE, THEME_OPTIONS } from '../../utils/themes';
 
 interface SettingsViewProps {
@@ -59,7 +59,7 @@ const settingsFields:formField[] = [
 
 export default function SettingsView(props:SettingsViewProps):JSX.Element {
   const { children, settingsDoc, loading, inputFocusHandler = ()=>{} } = props;
-  const addUpdateRecordData = useAddUpdateRecordData();
+  const saveDocument = useSaveDocument();
   // Settings saved before themes existed have no TITLE or THEME, so the form
   // shows the defaults for them instead of empty values.
   const formDoc = useMemo(
@@ -67,7 +67,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
     [settingsDoc],
   );
   const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
-    addUpdateRecordData(payload, 'setting');
+    saveDocument({ ...payload, _id: 'app_settings', type: 'setting' });
     setTimeout(()=>{
       callback(false);
     }, 200);
