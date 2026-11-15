@@ -1,13 +1,8 @@
 // @vitest-environment jsdom
-import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import PouchDB from 'pouchdb-browser';
-import find from 'pouchdb-find';
-import { Provider } from 'use-pouchdb';
+import { makeTestDatabase, withPouch } from '../test/pouch';
 import Home from './page';
-
-PouchDB.plugin(find);
 
 // Drives the real page against a real PouchDB on a fake IndexedDB, so the
 // settings form, the document round trip, and the appearance hook all run.
@@ -15,7 +10,7 @@ describe('Settings appearance round trip', () => {
   let db: PouchDB.Database;
 
   beforeEach(async () => {
-    db = new PouchDB(`settings-test-${Date.now()}-${Math.random()}`);
+    db = makeTestDatabase();
     await db.put({
       _id: 'app_settings',
       type: 'setting',
@@ -29,9 +24,9 @@ describe('Settings appearance round trip', () => {
   });
 
   async function openSettings() {
-    render(<Provider pouchdb={db}><Home /></Provider>);
+    render(<Home />, { wrapper: withPouch(db) });
     await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
-    const navButtons = document.querySelectorAll('svg');
+    const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
     await act(async () => { fireEvent.click(navButtons[navButtons.length - 1].parentElement!); });
     return await screen.findByRole('combobox') as HTMLSelectElement;
   }
@@ -60,5 +55,61 @@ describe('Settings appearance round trip', () => {
       expect(saved.THEME).toBe('gold');
     });
     await waitFor(() => expect(document.documentElement.getAttribute('data-theme')).toBe('gold'));
+  });
+});
+
+describe('Templates end to end', () => {
+  let db: PouchDB.Database;
+  beforeEach(async () => {
+    db = makeTestDatabase();
+    await db.put({ _id: 'app_settings', type: 'setting', RECORD_LIMIT: '1000', LOG_LIMIT: '1000', WAIT: '300', CPS_MIN: '0', CPS_MAX: '30', ID_LENGTH: '8' });
+    await db.put({ _id: '5eef2a29', type: 'record', Notes: '' });
+  });
+  afterEach(async () => { await db.destroy(); });
+
+  // Nav order is ids, logs, inputs (templates), settings; the ready light has no svg.
+  // Scoped to the sidebar because views render their own icons too.
+  function clickNav(indexFromEnd: number) {
+    const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
+    fireEvent.click(navButtons[navButtons.length - indexFromEnd].parentElement!);
+  }
+
+  test('create a template, assign it to a record, save a value, and see the change in the log', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
+
+    await act(async () => { clickNav(2); });
+    const newButton = await screen.findByRole('button', { name: 'New template' });
+    await act(async () => { fireEvent.click(newButton); });
+    await act(async () => { fireEvent.change(await screen.findByLabelText('Template name'), { target: { value: 'Asset Tag' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Add field' })); });
+    await act(async () => { fireEvent.change(screen.getByLabelText('Field 1 name'), { target: { value: 'Owner' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Save template' })); });
+    await waitFor(async () => expect((await db.find({ selector: { type: 'template' } })).docs).toHaveLength(1));
+    const templateId = (await db.find({ selector: { type: 'template' } })).docs[0]._id;
+
+    await act(async () => { clickNav(4); });
+    const recordRow = await screen.findByText('5eef2a29');
+    await act(async () => { fireEvent.click(recordRow); });
+    await screen.findAllByRole('option', { name: 'Asset Tag' });
+    const templateSelect = await screen.findByLabelText('Template') as HTMLSelectElement;
+    await act(async () => { fireEvent.change(templateSelect, { target: { value: templateId } }); });
+    const ownerInput = await screen.findByLabelText('Owner');
+    await act(async () => { fireEvent.change(ownerInput, { target: { value: 'Alex' } }); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Update' })); });
+    await waitFor(async () => expect((await db.find({ selector: { type: 'change' } })).docs).toHaveLength(1));
+
+    await act(async () => { clickNav(3); });
+    expect(await screen.findByText('Owner: → Alex')).toBeTruthy();
+    expect(await screen.findByText('Template: No template → Asset Tag')).toBeTruthy();
+  });
+
+  test('opens on Recent Records and the title brings you back to it', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
+    await act(async () => { clickNav(1); });
+    expect(await screen.findByRole('heading', { name: 'Settings' })).toBeTruthy();
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'RFID Scans' })); });
+    expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
   });
 });

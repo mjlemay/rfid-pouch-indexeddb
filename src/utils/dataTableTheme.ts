@@ -4,6 +4,14 @@ import { createTheme } from 'react-data-table-component';
 // tables follow whichever theme is active without re-registering.
 export const DATA_TABLE_THEME = 'app';
 
+// Shared sizing for every table: a step up from the library's 13px rows.
+export const DATA_TABLE_STYLES = {
+  headCells: { style: { fontSize: '15px', fontWeight: 700 } },
+  rows: { style: { fontSize: '16px', minHeight: '52px' } },
+  cells: { style: { fontSize: '16px' } },
+  pagination: { style: { fontSize: '14px' } },
+};
+
 createTheme(DATA_TABLE_THEME, {
   text: {
     primary: 'var(--color-text)',

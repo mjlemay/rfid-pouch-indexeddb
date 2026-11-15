@@ -4,13 +4,13 @@ import { useState, useEffect, useMemo } from 'react';
 import SideMenuBar from './components/sideMenuBar';
 import LogsView from './components/logsView';
 import IdsView from './components/idsView';
-import InputsView from './components/inputsView';
+import TemplatesView from './components/templatesView';
 import SettingsView from './components/settingsView';
 import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
 import { useApplyAppearance } from './hooks/useApplyAppearance';
-import { useAddUpdateRecordData } from './hooks/useUpdateRecordData';
+import { useSaveDocument } from './hooks/useSaveDocument';
 import { useDoc } from 'use-pouchdb';
 import {
   RECORD_LIMIT,
@@ -26,11 +26,11 @@ import { appearanceFromSettings, DEFAULT_APPEARANCE } from "../utils/themes";
 
 
 export default function Home() {
-  const [ view, setView ] = useState('log');
+  const [ view, setView ] = useState('ids');
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
   const [ numReady, setnumReady ] = useState(true);
-  const addUpdateRecordData = useAddUpdateRecordData();
+  const saveDocument = useSaveDocument();
   const { 
     doc: settingsDoc,
     loading: loadingSettings,
@@ -91,10 +91,10 @@ useApplyAppearance(appearance);
           CPS_MAX: `${CPS_MAX}`,
           ID_LENGTH: `${ID_LENGTH}`
         };
-        addUpdateRecordData(defaultSettings, 'setting');
+        saveDocument({ ...defaultSettings, type: 'setting' });
       }
     }
-  },[addUpdateRecordData, settingsError, settingsState]);
+  },[saveDocument, settingsError, settingsState]);
 
   return (
     <div
@@ -102,7 +102,7 @@ useApplyAppearance(appearance);
     >
       <SideMenuBar selected={view} scanReady={numReady} screenActionHandler={handleAction}  />
       <div className="flex flex-1 flex-col min-w-0">
-      <TopBar title={appearance.title} />
+      <TopBar title={appearance.title} onTitleClick={() => setView('ids')} />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>
         {view == 'ids' && <IdsView 
@@ -113,9 +113,10 @@ useApplyAppearance(appearance);
           />}
           {view == 'logs' && <LogsView
             actionHandler={handleAction}
+            limit={parseInt(pouchSettingsDoc.LOG_LIMIT as string) || 1000}
             selectRowHandler={(scanId) => { setSelectedId(scanId); setView('ids'); }}
           />}
-          {view == 'inputs' && <InputsView actionHandler={handleAction} />}
+          {view == 'inputs' && <TemplatesView inputFocusHandler={handleFocusChange} />}
           {view == 'settings' && <SettingsView 
             actionHandler={handleAction}
             inputFocusHandler={handleFocusChange}

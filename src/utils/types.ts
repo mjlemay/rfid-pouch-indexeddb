@@ -6,12 +6,15 @@ export type formFieldOption = {
 
 export type formField = {
     name: string;
+    label?: string;
     inputType: string;
     fieldType: string;
     caption?: string;
     tailwind?: string;
     options?: formFieldOption[];
 }
+
+export type formValues = { [key: string]: unknown };
 
 export type pouchDoc = PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
 
