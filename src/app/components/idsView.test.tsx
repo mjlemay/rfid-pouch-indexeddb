@@ -25,6 +25,9 @@ describe('IdsView', () => {
     const templateSelect = await screen.findByLabelText('Template') as HTMLSelectElement;
     await act(async () => { fireEvent.change(templateSelect, { target: { value: 'template_asset' } }); });
     const ownerInput = await screen.findByLabelText('Owner') as HTMLInputElement;
+    // Template fields come before Notes, which stays at the bottom of the form.
+    const notesInput = screen.getByLabelText('Notes');
+    expect(ownerInput.compareDocumentPosition(notesInput) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     await act(async () => { fireEvent.change(ownerInput, { target: { value: 'Alex' } }); });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Update' })); });
     await waitFor(async () => {

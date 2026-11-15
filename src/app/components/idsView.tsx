@@ -48,7 +48,7 @@ function inputTypeFor(fieldType: string): string {
   return 'text';
 }
 
-// Form fields for a record: the template picker, Notes, then the template's fields.
+// Form fields for a record: the template picker, the template's fields, then Notes last.
 function recordFields(templates: TemplateDoc[], template: TemplateDoc | undefined): formField[] {
   const picker: formField = {
     name: TEMPLATE_FIELD, label: 'Template', inputType: 'select', fieldType: 'select',
@@ -59,7 +59,7 @@ function recordFields(templates: TemplateDoc[], template: TemplateDoc | undefine
     name: field.id, label: field.name, caption: field.caption || undefined,
     inputType: inputTypeFor(field.fieldType), fieldType: field.fieldType === 'text' ? 'input' : field.fieldType,
   }));
-  return [picker, notes, ...fields];
+  return [picker, ...fields, notes];
 }
 
 export default function IdsView(props:IdsViewProps):JSX.Element {
@@ -182,7 +182,7 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
         )}
       </div>
       <div className='grow p-4 m-10'>
-        <div className="flex items-center gap-6 pb-2">
+        <div className="flex items-center justify-between gap-6 pb-2">
           <h1 className="font-medium text-4xl">Recent Records</h1>
           <label className="flex items-center gap-2 text-lg">
             <span>Filter by template</span>

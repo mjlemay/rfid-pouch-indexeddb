@@ -107,7 +107,7 @@ When no templates exist the right pane says so and points at New.
 
 Above the form: a Template dropdown with No template and each template by name. Changing it updates the draft and is saved by Update together with the fields.
 
-The form shows Notes first, then the template's fields in template order. Text is a text box, number a numeric input, boolean a checkbox. Captions show beside fields as today. Update runs `validateRecordValues`; problems show under the field and block the save.
+The form shows the template's fields in template order, then Notes last. Text is a text box, number a numeric input, boolean a checkbox. Captions show beside fields as today. Update runs `validateRecordValues`; problems show under the field and block the save.
 
 The form component gains `boolean` and `number` field types and per-field error messages. Its select stays uncontrolled, for the reason recorded in the themes PR.
 
