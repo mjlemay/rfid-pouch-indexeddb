@@ -58,3 +58,33 @@ describe('FormViewer select field', () => {
     expect(select.value).toBe('light');
   });
 });
+
+describe('FormViewer typed fields', () => {
+  test('a boolean field renders a checkbox reflecting the stored value and reports changes', () => {
+    const onValuesChange = vi.fn();
+    const booleanFields: formField[] = [{ name: 'f_service', label: 'In service', inputType: 'checkbox', fieldType: 'boolean' }];
+    render(<FormViewer fields={booleanFields} formDoc={{ f_service: true } as never} onValuesChange={onValuesChange} />);
+    const box = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(box.checked).toBe(true);
+    fireEvent.click(box);
+    expect(box.checked).toBe(false);
+    expect(onValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ f_service: false }));
+  });
+
+  test('a number field renders a numeric input and keeps the typed text', () => {
+    const numberFields: formField[] = [{ name: 'f_qty', label: 'Qty', inputType: 'number', fieldType: 'number' }];
+    render(<FormViewer fields={numberFields} formDoc={{ f_qty: 3 } as never} />);
+    const input = screen.getByRole('spinbutton') as HTMLInputElement;
+    expect(input.value).toBe('3');
+    fireEvent.change(input, { target: { value: '42' } });
+    expect(input.value).toBe('42');
+  });
+
+  test('shows the label instead of the name when given, and an error under the field', () => {
+    const labeled: formField[] = [{ name: 'f_owner', label: 'Owner', inputType: 'text', fieldType: 'input' }];
+    render(<FormViewer fields={labeled} formDoc={{} as never} errors={{ f_owner: 'Owner is required' }} />);
+    expect(screen.getByText('Owner')).toBeTruthy();
+    expect(screen.queryByText('f_owner')).toBeNull();
+    expect(screen.getByText('Owner is required')).toBeTruthy();
+  });
+});

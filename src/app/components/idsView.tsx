@@ -4,7 +4,7 @@ import { useSaveDocument } from '../hooks/useSaveDocument';
 import FormViewer from './formViewer';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { DATA_TABLE_THEME } from '../../utils/dataTableTheme';
-import { pouchDocItem } from '@/utils/types';
+import { formValues, pouchDocItem } from '@/utils/types';
 
 interface IdsViewProps {
   children?: React.ReactNode;
@@ -56,7 +56,7 @@ interface DataRow {
       }
     ];
 
-    const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
+    const handleRecordUpdate = (payload: formValues, callback: (arg0: boolean) => void) => {
       saveDocument({ ...payload, _id: selectedId, type: 'record' });
       setTimeout(()=>{
         callback(false);

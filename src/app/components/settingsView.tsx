@@ -1,6 +1,6 @@
 import React, { JSX, useMemo } from 'react';
 import FormViewer from './formViewer';
-import { formField, pouchDoc } from "../../utils/types";
+import { formField, formValues, pouchDoc } from "../../utils/types";
 import { useSaveDocument } from '../hooks/useSaveDocument';
 import { DEFAULT_THEME, DEFAULT_TITLE, THEME_OPTIONS } from '../../utils/themes';
 
@@ -66,7 +66,7 @@ export default function SettingsView(props:SettingsViewProps):JSX.Element {
     () => settingsDoc ? { TITLE: DEFAULT_TITLE, THEME: DEFAULT_THEME, ...settingsDoc } : undefined,
     [settingsDoc],
   );
-  const handleRecordUpdate = (payload:{ [key: string]: string }, callback: (arg0: boolean) => void) => {
+  const handleRecordUpdate = (payload: formValues, callback: (arg0: boolean) => void) => {
     saveDocument({ ...payload, _id: 'app_settings', type: 'setting' });
     setTimeout(()=>{
       callback(false);
