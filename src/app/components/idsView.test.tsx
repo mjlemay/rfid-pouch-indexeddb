@@ -67,6 +67,8 @@ describe('IdsView', () => {
     await act(async () => { fireEvent.change(filter, { target: { value: 'template_asset' } }); });
     expect(await screen.findByText('Owner')).toBeTruthy();
     expect(await screen.findByText('Sam')).toBeTruthy();
+    const headers = screen.getAllByRole('columnheader').map((header) => header.textContent);
+    expect(headers.indexOf('Owner')).toBeLessThan(headers.indexOf('Notes'));
     await act(async () => { fireEvent.change(filter, { target: { value: 'all' } }); });
     await waitFor(() => expect(screen.queryByText('Owner')).toBeNull());
   });

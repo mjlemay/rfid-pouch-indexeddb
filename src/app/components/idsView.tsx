@@ -105,17 +105,17 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
     limit,
   });
 
-  // When one template is selected, show its fields as columns next to Notes.
+  // When one template is selected, show its fields as columns between ID and Notes.
   const filteredTemplate = templates.find((template) => template._id === filter);
   const columns: TableColumn<DataRow>[] = [
     { name: 'ID', selector: row => row._id || '', sortable: true, style: {'cursor':'pointer'} },
-    { name: 'Notes', selector: row => row.Notes || '', grow: 6 },
     ...(filteredTemplate?.fields ?? []).map((field): TableColumn<DataRow> => ({
       name: field.name,
       selector: row => displayFieldValue(row.data?.[field.id]),
       sortable: true,
       grow: 3,
     })),
+    { name: 'Notes', selector: row => row.Notes || '', grow: 6 },
   ];
 
   const handleValuesChange = (values: formValues) => {
