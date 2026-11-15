@@ -26,7 +26,7 @@ import { appearanceFromSettings, DEFAULT_APPEARANCE } from "../utils/themes";
 
 
 export default function Home() {
-  const [ view, setView ] = useState('log');
+  const [ view, setView ] = useState('ids');
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
   const [ numReady, setnumReady ] = useState(true);
@@ -102,7 +102,7 @@ useApplyAppearance(appearance);
     >
       <SideMenuBar selected={view} scanReady={numReady} screenActionHandler={handleAction}  />
       <div className="flex flex-1 flex-col min-w-0">
-      <TopBar title={appearance.title} />
+      <TopBar title={appearance.title} onTitleClick={() => setView('ids')} />
       {pouchSettingsDoc && (
         <div className={`flex flex-1 items-center justify-center`}>
         {view == 'ids' && <IdsView 

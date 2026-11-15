@@ -26,7 +26,7 @@ describe('Settings appearance round trip', () => {
   async function openSettings() {
     render(<Home />, { wrapper: withPouch(db) });
     await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
-    const navButtons = document.querySelectorAll('svg');
+    const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
     await act(async () => { fireEvent.click(navButtons[navButtons.length - 1].parentElement!); });
     return await screen.findByRole('combobox') as HTMLSelectElement;
   }
@@ -102,5 +102,14 @@ describe('Templates end to end', () => {
     await act(async () => { clickNav(3); });
     expect(await screen.findByText('Owner: → Alex')).toBeTruthy();
     expect(await screen.findByText('Template: No template → Asset Tag')).toBeTruthy();
+  });
+
+  test('opens on Recent Records and the title brings you back to it', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
+    await act(async () => { clickNav(1); });
+    expect(await screen.findByRole('heading', { name: 'Settings' })).toBeTruthy();
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'RFID Scans' })); });
+    expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
   });
 });
