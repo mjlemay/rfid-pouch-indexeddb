@@ -41,6 +41,25 @@ function displayFieldValue(value: FieldValue | undefined): string {
 }
 
 const TEMPLATE_FIELD = 'templateId';
+const FILTER_STORAGE_KEY = 'rfid.recentRecordsFilter';
+
+// The last filter choice is a per-browser display preference, so it lives in
+// local storage rather than the database. Storage can be unavailable or throw.
+function readStoredFilter(): string {
+  try {
+    return window.localStorage.getItem(FILTER_STORAGE_KEY) ?? 'all';
+  } catch {
+    return 'all';
+  }
+}
+
+function writeStoredFilter(filter: string): void {
+  try {
+    window.localStorage.setItem(FILTER_STORAGE_KEY, filter);
+  } catch {
+    // Nothing to do; the choice simply will not persist.
+  }
+}
 
 function inputTypeFor(fieldType: string): string {
   if (fieldType === 'number') return 'number';
@@ -66,7 +85,7 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
   const { children, selectedId = '', limit, inputFocusHandler = ()=>{}, selectRowHandler = ()=>{} } = props;
   const saveDocument = useSaveDocument();
   const saveRecord = useSaveRecord();
-  const { templates } = useTemplates();
+  const { templates, loading: templatesLoading } = useTemplates();
   const hasSelectedId = selectedId !== '';
   // PouchDB rejects an empty id outright, so ask for a placeholder that simply does not exist.
   const { doc, loading, state, error } = useDoc(hasSelectedId ? selectedId : 'record_none_selected');
@@ -96,7 +115,15 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
     };
   }, [record, storedTemplate, draftTemplate, knownTemplateIds]);
 
-  const [filter, setFilter] = useState<string>('all');
+  const [storedFilter, setStoredFilter] = useState<string>(readStoredFilter);
+  const setFilter = (value: string) => {
+    setStoredFilter(value);
+    writeStoredFilter(value);
+  };
+  // A remembered template that no longer exists falls back to All once templates have loaded.
+  const filter = storedFilter === 'all' || storedFilter === 'none' || templatesLoading || knownTemplateIds.includes(storedFilter)
+    ? storedFilter
+    : 'all';
   const selector = useMemo(() => recordFilterSelector(filter, knownTemplateIds), [filter, knownTemplateIds]);
   const { docs, loading:docsLoading, error:docsError } = useFind({
     index: { fields: ['type'] },
@@ -189,7 +216,8 @@ export default function IdsView(props:IdsViewProps):JSX.Element {
             <span className="relative w-60">
               <select
                 aria-label="Filter by template"
-                defaultValue="all"
+                key={`filter_${knownTemplateIds.join('|')}`}
+                defaultValue={filter}
                 onChange={(event) => setFilter(event.target.value)}
                 className="appearance-none bg-raised border border-line text-text text-lg rounded-lg block w-full p-2 pr-10"
               >

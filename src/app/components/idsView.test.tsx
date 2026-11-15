@@ -11,6 +11,7 @@ const assetTag = { ...createTemplate('Asset Tag', 'now'), _id: 'template_asset',
 describe('IdsView', () => {
   let db: PouchDB.Database;
   beforeEach(async () => {
+    window.localStorage.clear();
     db = makeTestDatabase();
     await db.put(assetTag);
     await db.put({ _id: '5eef2a29', type: 'record', Notes: 'tagged' });
@@ -74,5 +75,18 @@ describe('IdsView', () => {
     expect(headers.indexOf('Owner')).toBeLessThan(headers.indexOf('Notes'));
     await act(async () => { fireEvent.change(filter, { target: { value: 'all' } }); });
     await waitFor(() => expect(screen.queryByText('Owner')).toBeNull());
+  });
+
+  test('remembers the last filter across reopening the page', async () => {
+    const first = render(<IdsView selectedId="" limit={100} />, { wrapper: withPouch(db) });
+    await screen.findByText('untagged');
+    await act(async () => { fireEvent.change(screen.getByLabelText('Filter by template'), { target: { value: 'template_asset' } }); });
+    await waitFor(() => expect(screen.queryByText('tagged')).toBeNull());
+    first.unmount();
+
+    render(<IdsView selectedId="" limit={100} />, { wrapper: withPouch(db) });
+    await screen.findByText('untagged');
+    await waitFor(() => expect((screen.getByLabelText('Filter by template') as HTMLSelectElement).value).toBe('template_asset'));
+    expect(screen.queryByText('tagged')).toBeNull();
   });
 });
