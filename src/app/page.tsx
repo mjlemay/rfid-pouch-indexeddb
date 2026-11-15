@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import SideMenuBar from './components/sideMenuBar';
 import LogsView from './components/logsView';
 import IdsView from './components/idsView';
@@ -21,6 +21,7 @@ import {
   DEVICE_TYPE
 } from "../utils/consts";
 import { pouchDocItem } from "../utils/types";
+import { DEFAULT_RFID_PARSER_CONFIG, parserConfigFromSettings } from "../utils/rfidKeystrokeParser";
 
 
 export default function Home() {
@@ -37,9 +38,13 @@ export default function Home() {
     error:settingsError 
 } = useDoc('app_settings');
 const addScanRecord = useAddScanRecord();
-const rifdNumber = useRFIDNumber(numReady);
+const pouchSettingsDoc = settingsDoc as pouchDocItem;
+const rfidParserConfig = useMemo(
+  () => parserConfigFromSettings(pouchSettingsDoc, DEFAULT_RFID_PARSER_CONFIG),
+  [pouchSettingsDoc],
+);
+const rifdNumber = useRFIDNumber(numReady, rfidParserConfig);
 const pcscItem = usePCSCItem(itemReady);
-const pouchSettingsDoc = settingsDoc as pouchDocItem; 
   
 
   const handleAction = (action:string) => {

@@ -1,65 +1,46 @@
-import { useState, useCallback, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  createRfidKeystrokeParser,
+  DEFAULT_RFID_PARSER_CONFIG,
+  RfidParserConfig,
+} from "../../utils/rfidKeystrokeParser";
 
-const WAIT = 300;
-const CPS_MIN = 3;
-const CPS_MAX = 30;
-const ID_LENGTH = 8;
-
-export function useRFIDNumber(enabled:boolean) {
-    const [ codeString, setCodeString ] = useState('');
+// Listens for keyboard-wedge RFID reader input on the window and returns the
+// most recent tag id. The id is cleared when the next scan begins so that
+// scanning the same tag twice in a row is reported both times.
+export function useRFIDNumber(enabled: boolean, config: RfidParserConfig = DEFAULT_RFID_PARSER_CONFIG) {
     const [ rfidCode, setRfidCode ] = useState('');
-    const [ lastDate, setLastDate ] = useState(new Date());
-    const isEnabled = enabled || false;
+    const { wait, cpsMin, cpsMax, idLength } = config;
 
-    const handleUserKeyPress = useCallback((event:KeyboardEvent) => {
-        const { key } = event;
-        const nextDate = new Date();
-        let cps = nextDate.getTime() - lastDate.getTime();
-        if (cps >= WAIT) {
-            setRfidCode('');
-            cps = CPS_MIN; //allows for first character to pass through
-        }
-
-        if (
-            isEnabled
-            && key !== 'enter'
-            && cps <= CPS_MAX
-            && cps >= CPS_MIN
-        ) {
-            const newCode = codeString + key;
-            setCodeString(newCode);
-            setRfidCode('');
-        }
-        if (
-            cps > CPS_MAX
-            || cps < CPS_MIN
-        ) {
-            setCodeString(''); // resets reader if cps is inconsistent
-        }
-        // clear values if rfid value or has reach id length
-        if (
-            (
-                isEnabled
-                && key !== 'enter'
-                && codeString.length === ID_LENGTH
-            )
-        ) {
-            const hexadecimalRegex = new RegExp('^(0x|0X)?[a-fA-F0-9]+$');     
-            if (hexadecimalRegex.test(codeString)) {
-                setRfidCode(codeString);
-            }
-            setCodeString('');
-        }
-
-        setLastDate(nextDate);
-    }, [codeString, isEnabled, lastDate]);
+    // The parser keeps the partial buffer outside React state, so keystrokes
+    // do not force a re-render of the page between characters.
+    const parser = useMemo(
+        () => createRfidKeystrokeParser({ wait, cpsMin, cpsMax, idLength }),
+        [wait, cpsMin, cpsMax, idLength],
+    );
 
     useEffect(() => {
-        window.addEventListener("keydown", handleUserKeyPress);
-        return () => {
-            window.removeEventListener("keydown", handleUserKeyPress);
+        if (!enabled) {
+            parser.reset();
+            return;
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            // event.timeStamp is when the key was pressed, not when this handler ran.
+            const timestamp = event.timeStamp || performance.now();
+            const result = parser.feed(event.key, timestamp);
+            if (result.kind === 'started') {
+                setRfidCode('');
+            } else if (result.kind === 'scanned') {
+                setRfidCode(result.code);
+            }
         };
-    }, [handleUserKeyPress]);
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [enabled, parser]);
 
     return rfidCode;
 }
