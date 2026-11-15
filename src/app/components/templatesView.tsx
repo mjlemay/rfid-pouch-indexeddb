@@ -121,7 +121,7 @@ export default function TemplatesView(props: TemplatesViewProps): JSX.Element {
             key={template._id}
             type="button"
             onClick={() => selectTemplate(template._id)}
-            className={`text-left text-lg rounded-lg px-3 py-2 ${template._id === selectedId ? 'bg-control text-control-text' : 'bg-raised hover:bg-surface'}`}
+            className={`text-center text-lg rounded-lg px-3 py-2 ${template._id === selectedId ? 'bg-control text-control-text' : 'bg-raised hover:bg-surface'}`}
           >
             {template.name}
           </button>
