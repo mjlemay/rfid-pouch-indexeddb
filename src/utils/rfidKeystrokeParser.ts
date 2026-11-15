@@ -31,7 +31,7 @@ export const DEFAULT_RFID_PARSER_CONFIG: RfidParserConfig = {
 const TERMINATOR_KEYS = new Set(['Enter', 'Tab']);
 const HEXADECIMAL = /^[a-fA-F0-9]+$/;
 
-// Turns the keystroke stream from a keyboard-wedge RFID reader into tag ids.
+// Turns the keystroke stream from a USB RFID reader into tag ids.
 // Timestamps should come from the keyboard event itself so that time the page
 // spends rendering between keystrokes does not count against the reader.
 export function createRfidKeystrokeParser(config: RfidParserConfig): RfidKeystrokeParser {

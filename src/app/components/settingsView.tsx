@@ -22,7 +22,7 @@ const settingsFields:formField[] = [
   },
   {
     name: "RFID SETTINGS", inputType: "none", fieldType: "header", tailwind:"text-center",
-    caption: "Timing and format of the keyboard-wedge RFID reader.",
+    caption: "Timing and format of the USB RFID reader.",
   },
   {
     name: "WAIT", inputType: "text", fieldType: "input", tailwind:"text-center",
