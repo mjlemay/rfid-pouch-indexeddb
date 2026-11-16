@@ -6,6 +6,7 @@ import LogsView from './components/logsView';
 import IdsView from './components/idsView';
 import TemplatesView from './components/templatesView';
 import SettingsView from './components/settingsView';
+import ImportExportView from './components/importExportView';
 import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
@@ -123,6 +124,7 @@ useApplyAppearance(appearance);
             loading={loadingSettings}
             settingsDoc={settingsDoc} 
           />}
+          {view == 'data' && <ImportExportView title={appearance.title} />}
         </div>
       )}
       </div>

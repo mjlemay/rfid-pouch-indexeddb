@@ -27,7 +27,7 @@ describe('Settings appearance round trip', () => {
     render(<Home />, { wrapper: withPouch(db) });
     await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
     const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
-    await act(async () => { fireEvent.click(navButtons[navButtons.length - 1].parentElement!); });
+    await act(async () => { fireEvent.click(navButtons[navButtons.length - 2].parentElement!); });
     return await screen.findByRole('combobox') as HTMLSelectElement;
   }
 
@@ -67,7 +67,7 @@ describe('Templates end to end', () => {
   });
   afterEach(async () => { await db.destroy(); });
 
-  // Nav order is ids, logs, inputs (templates), settings; the ready light has no svg.
+  // Nav order is ids, logs, inputs (templates), settings, data (import and export); the ready light has no svg.
   // Scoped to the sidebar because views render their own icons too.
   function clickNav(indexFromEnd: number) {
     const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
@@ -78,7 +78,7 @@ describe('Templates end to end', () => {
     render(<Home />, { wrapper: withPouch(db) });
     await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
 
-    await act(async () => { clickNav(2); });
+    await act(async () => { clickNav(3); });
     const newButton = await screen.findByRole('button', { name: 'New template' });
     await act(async () => { fireEvent.click(newButton); });
     await act(async () => { fireEvent.change(await screen.findByLabelText('Template name'), { target: { value: 'Asset Tag' } }); });
@@ -88,7 +88,7 @@ describe('Templates end to end', () => {
     await waitFor(async () => expect((await db.find({ selector: { type: 'template' } })).docs).toHaveLength(1));
     const templateId = (await db.find({ selector: { type: 'template' } })).docs[0]._id;
 
-    await act(async () => { clickNav(4); });
+    await act(async () => { clickNav(5); });
     const recordRow = await screen.findByText('5eef2a29');
     await act(async () => { fireEvent.click(recordRow); });
     await screen.findAllByRole('option', { name: 'Asset Tag' });
@@ -99,7 +99,7 @@ describe('Templates end to end', () => {
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Update' })); });
     await waitFor(async () => expect((await db.find({ selector: { type: 'change' } })).docs).toHaveLength(1));
 
-    await act(async () => { clickNav(3); });
+    await act(async () => { clickNav(4); });
     expect(await screen.findByText('Owner: → Alex')).toBeTruthy();
     expect(await screen.findByText('Template: No template → Asset Tag')).toBeTruthy();
   });
@@ -107,9 +107,44 @@ describe('Templates end to end', () => {
   test('opens on Recent Records and the title brings you back to it', async () => {
     render(<Home />, { wrapper: withPouch(db) });
     expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
-    await act(async () => { clickNav(1); });
+    await act(async () => { clickNav(2); });
     expect(await screen.findByRole('heading', { name: 'Settings' })).toBeTruthy();
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'RFID Scans' })); });
     expect(await screen.findByRole('heading', { name: 'Recent Records' })).toBeTruthy();
+  });
+});
+
+describe('Import end to end', () => {
+  let db: PouchDB.Database;
+  beforeEach(async () => {
+    db = makeTestDatabase();
+    await db.put({ _id: 'app_settings', type: 'setting', RECORD_LIMIT: '1000', LOG_LIMIT: '1000', WAIT: '300', CPS_MIN: '0', CPS_MAX: '30', ID_LENGTH: '8' });
+  });
+  afterEach(async () => { await db.destroy(); });
+
+  function clickNav(indexFromEnd: number) {
+    const navButtons = document.querySelector('.bg-sidebar')!.querySelectorAll('svg');
+    fireEvent.click(navButtons[navButtons.length - indexFromEnd].parentElement!);
+  }
+
+  test('the last icon opens Import and Export, and an import shows in the Activity feed and Recent Records', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'RFID Scans' })).toBeTruthy());
+
+    await act(async () => { clickNav(1); });
+    expect(await screen.findByRole('heading', { name: 'Import and Export' })).toBeTruthy();
+    await waitFor(() => expect((screen.getByLabelText('Import file') as HTMLInputElement).disabled).toBe(false));
+
+    const file = new File(['ID,Template,Notes,Owner\r\na1,Loaner,first,Sam\r\nb2,Loaner,second,Alex\r\n'], 'loaners.csv', { type: 'text/csv' });
+    await act(async () => { fireEvent.change(screen.getByLabelText('Import file'), { target: { files: [file] } }); });
+    expect(await screen.findByText('2 added')).toBeTruthy();
+
+    await act(async () => { clickNav(4); });
+    expect(await screen.findByText('Imported loaners.csv: 2 added')).toBeTruthy();
+    expect(screen.getAllByText('Updated')).toHaveLength(2);
+
+    await act(async () => { clickNav(5); });
+    expect(await screen.findByText('a1')).toBeTruthy();
+    expect(screen.getByText('b2')).toBeTruthy();
   });
 });
