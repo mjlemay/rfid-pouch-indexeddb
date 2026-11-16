@@ -31,6 +31,7 @@ Import card:
 
 - Heading "Import" and the caption "Choose a .json or .csv file. New IDs are added, existing IDs are updated, and bad rows are skipped."
 - A "Choose file" button that is a label wrapping a visually hidden `<input type="file" accept=".json,.csv">` labeled "Import file". While a file is being processed the label reads "Importing..." and the input is disabled.
+- Both the Download button and the file input stay disabled until the templates and records queries have loaded, so an export never shows blank templates and an import never recreates a template the database already has.
 - A result panel shown after an import finishes: one line with the counts, such as "8 added, 4 updated, 2 skipped", and a list of up to ten problems such as "Row 7: Qty must be a number". When more problems exist the list ends with "and 3 more". When nothing was written because the file could not be read, the panel shows that single problem.
 
 ## Export file formats

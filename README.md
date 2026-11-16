@@ -35,4 +35,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Reminders
 
 - As the data is stored via the browser, make sure you use the same browser each time!
+- To move records to another browser or machine, download them from the Import and Export page as JSON or CSV and import the file there. New IDs are added and existing IDs are updated.
 - Tune the RFID timing values in Settings to match your RFID USB reader.
