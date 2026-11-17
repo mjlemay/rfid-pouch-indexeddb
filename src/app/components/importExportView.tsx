@@ -103,6 +103,16 @@ export default function ImportExportView(props: ImportExportViewProps): JSX.Elem
           </div>
         )}
       </section>
+
+      <p className="text-lg opacity-70">
+        Raw:{' '}
+        {EXPORT_FORMAT_OPTIONS.map((option, index) => (
+          <React.Fragment key={option.value}>
+            {index > 0 && ' · '}
+            <a href={`#${option.value}`} target="_blank" rel="noopener" className="underline">#{option.value}</a>
+          </React.Fragment>
+        ))}
+      </p>
       {children}
     </div>
   );

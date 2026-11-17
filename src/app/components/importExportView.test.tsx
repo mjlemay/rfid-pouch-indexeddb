@@ -76,4 +76,13 @@ describe('ImportExportView', () => {
     expect(await screen.findByText('The file is not valid JSON')).toBeTruthy();
     expect(screen.queryByText('no changes')).toBeNull();
   });
+
+  test('links to the raw JSON and CSV views in a new tab', async () => {
+    await renderView();
+    for (const format of ['json', 'csv']) {
+      const link = screen.getByRole('link', { name: `#${format}` });
+      expect(link.getAttribute('href')).toBe(`#${format}`);
+      expect(link.getAttribute('target')).toBe('_blank');
+    }
+  });
 });
