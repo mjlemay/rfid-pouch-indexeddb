@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Simple RFID Notekeeper</title>
+  <meta name="description" content="Scan a tag with a USB RFID reader and keep notes on it. Everything stays in your browser.">
+  <style>
+    :root {
+      --background: #171717;
+      --surface: #0a0a0a;
+      --raised: #262626;
+      --line: #404040;
+      --text: #ededed;
+      --accent: #86efac;
+      --accent-text: #052e16;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: 3rem 16px 4rem;
+    }
+    h1 { font-size: 2.5rem; margin: 0 0 0.25rem; }
+    .tagline { font-size: 1.25rem; opacity: 0.8; margin: 0 0 2rem; }
+    p { font-size: 1.1rem; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    .download {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.9rem 1.6rem;
+      border-radius: 0.75rem;
+    }
+    .download:hover { filter: brightness(1.1); }
+    .caption { margin: 0.75rem 0 0; opacity: 0.7; font-size: 1rem; }
+    a { color: var(--accent); }
+    ol { padding-left: 1.5rem; }
+    li { margin: 0.5rem 0; font-size: 1.1rem; }
+    code {
+      background: var(--raised);
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.3rem;
+      font-size: 0.95em;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      opacity: 0.7;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>The Simple RFID Notekeeper</h1>
+    <p class="tagline">Scan a tag, keep a note. Everything stays in your browser.</p>
+
+    <p>
+      Plug in a USB RFID reader, scan a tag, and the app opens a record for it. Add notes and
+      templated fields such as owner, quantity, or in service. Every record, scan, and change is
+      stored in the browser with IndexedDB. Nothing leaves the machine, and the records can be
+      exported and imported as JSON or CSV.
+    </p>
+
+    <section class="card">
+      <a class="download" href="https://github.com/mjlemay/rfid-pouch-indexeddb/releases/latest/download/simple-rfid-notekeeper.zip">Download the latest release</a>
+      <p class="caption">
+        A zip of the static site, no install needed.
+        <a href="https://github.com/mjlemay/rfid-pouch-indexeddb/releases">All releases</a>
+      </p>
+    </section>
+
+    <h2>How to run it</h2>
+    <ol>
+      <li>Download the zip.</li>
+      <li>Unzip it. You get a folder named <code>simple-rfid-notekeeper</code>.</li>
+      <li>Open <code>index.html</code> inside that folder in Chrome or Edge.</li>
+      <li>Plug in the USB RFID reader and scan a tag.</li>
+      <li>Keep using the same browser on the same machine. The data lives in that browser, and clearing its site data deletes it.</li>
+      <li>Use Import and Export inside the app to move records to another browser or machine.</li>
+    </ol>
+
+    <footer>
+      <a href="https://github.com/mjlemay/rfid-pouch-indexeddb">Source on GitHub</a> · MIT License
+    </footer>
+  </main>
+</body>
+</html>

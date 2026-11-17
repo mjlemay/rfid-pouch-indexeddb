@@ -32,6 +32,12 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
+## Releases
+
+Every push to `main` runs the Release workflow. It reads the version from `package.json` and, when no `v<version>` tag exists yet, builds the static site, zips it as `simple-rfid-notekeeper-<version>.zip` and `simple-rfid-notekeeper.zip`, and publishes a GitHub Release. To ship a new version, bump the version in `package.json` and merge to `main`.
+
+The landing page at https://mjlemay.github.io/rfid-pouch-indexeddb/ always links to the latest zip. To build the zips locally, run `npm run build && npm run package`.
+
 ## Reminders
 
 - As the data is stored via the browser, make sure you use the same browser each time!
