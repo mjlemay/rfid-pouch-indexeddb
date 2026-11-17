@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 import { 
   ActivityLogIcon,
+  ArchiveIcon,
   AvatarIcon,
   GearIcon,
   InputIcon,
@@ -34,6 +35,9 @@ interface SideMenuBarProps {
         </IconButton>
         <IconButton selected={selected === 'settings'} handleAction={()=> screenActionHandler('settings')}>
             <GearIcon className="min-w-[50px] min-h-[50px]" />
+        </IconButton>
+        <IconButton selected={selected === 'data'} handleAction={()=> screenActionHandler('data')}>
+            <ArchiveIcon className="min-w-[50px] min-h-[50px]" />
         </IconButton>
         {children}
       </div>

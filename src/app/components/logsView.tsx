@@ -3,6 +3,7 @@ import { useFind } from 'use-pouchdb';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { DATA_TABLE_STYLES, DATA_TABLE_THEME } from '../../utils/dataTableTheme';
 import { RecordChange } from '../../utils/templates';
+import { describeImport, ImportDoc } from '../../utils/importExport';
 
 interface LogsViewProps {
   children?: React.ReactNode;
@@ -13,24 +14,34 @@ interface LogsViewProps {
 
 interface FeedRow {
   _id: string;
-  type: 'scan' | 'change';
-  scanId: string;
+  type: 'scan' | 'change' | 'import';
+  scanId?: string;
   date: string;
   changes?: RecordChange[];
+  fileName?: string;
+  added?: number;
+  updated?: number;
+  skipped?: number;
+}
+
+const EVENT_LABELS: Record<FeedRow['type'], string> = { scan: 'Scan', change: 'Updated', import: 'Import' };
+
+function asImportDoc(row: FeedRow): ImportDoc {
+  return { _id: row._id, type: 'import', date: row.date, fileName: row.fileName ?? '', added: row.added ?? 0, updated: row.updated ?? 0, skipped: row.skipped ?? 0 };
 }
 
 function describeChange(change: RecordChange): string {
   return `${change.field}: ${change.from} → ${change.to}`;
 }
 
-// One feed of scans and record changes, newest first.
+// One feed of scans, record changes and imports, newest first.
 export default function LogsView(props:LogsViewProps):JSX.Element {
   const { children, limit = 1000, selectRowHandler = ()=>{} } = props;
 
   const { docs, loading } = useFind({
     index: { fields: ['type'] },
-    selector: { type: { $in: ['scan', 'change'] } },
-    fields: ['_id', 'type', 'scanId', 'date', 'changes'],
+    selector: { type: { $in: ['scan', 'change', 'import'] } },
+    fields: ['_id', 'type', 'scanId', 'date', 'changes', 'fileName', 'added', 'updated', 'skipped'],
     limit,
   });
 
@@ -41,11 +52,12 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
 
   const columns: TableColumn<FeedRow>[] = [
     { name: 'Tag', selector: row => row.scanId || '', sortable: true, style: {'cursor':'pointer'}, minWidth: '140px', grow: 0 },
-    { name: 'Event', selector: row => (row.type === 'scan' ? 'Scan' : 'Updated'), minWidth: '120px', grow: 0 },
+    { name: 'Event', selector: row => EVENT_LABELS[row.type], minWidth: '120px', grow: 0 },
     {
       name: 'Details',
       cell: row => (
         <div className="py-1">
+          {row.type === 'import' && <div>{describeImport(asImportDoc(row))}</div>}
           {(row.changes ?? []).map((change, index) => (<div key={index}>{describeChange(change)}</div>))}
         </div>
       ),
@@ -70,7 +82,7 @@ export default function LogsView(props:LogsViewProps):JSX.Element {
         {rows.length >= 1 && (<DataTable
           columns={columns}
           data={rows}
-          onRowClicked={(row:FeedRow)=>{selectRowHandler(row.scanId)}}
+          onRowClicked={(row:FeedRow)=>{ if (row.type !== 'import' && row.scanId) selectRowHandler(row.scanId); }}
           keyField="_id"
           theme={DATA_TABLE_THEME}
           customStyles={DATA_TABLE_STYLES}

@@ -6,11 +6,14 @@ import LogsView from './components/logsView';
 import IdsView from './components/idsView';
 import TemplatesView from './components/templatesView';
 import SettingsView from './components/settingsView';
+import ImportExportView from './components/importExportView';
+import RawExportView from './components/rawExportView';
 import TopBar from './components/topBar';
 import { useAddScanRecord } from './hooks/useAddScanRecord';
 import { useRFIDNumber } from './hooks/useRFIDNumber';
 import { useApplyAppearance } from './hooks/useApplyAppearance';
 import { useSaveDocument } from './hooks/useSaveDocument';
+import { useRawFormat } from './hooks/useRawFormat';
 import { useDoc } from 'use-pouchdb';
 import {
   RECORD_LIMIT,
@@ -25,7 +28,7 @@ import { DEFAULT_RFID_PARSER_CONFIG, parserConfigFromSettings } from "../utils/r
 import { appearanceFromSettings, DEFAULT_APPEARANCE } from "../utils/themes";
 
 
-export default function Home() {
+function Home() {
   const [ view, setView ] = useState('ids');
   const [selectedId, setSelectedId ] = useState( '');
   const [ logging, setLogging ] = useState(false);
@@ -123,9 +126,18 @@ useApplyAppearance(appearance);
             loading={loadingSettings}
             settingsDoc={settingsDoc} 
           />}
+          {view == 'data' && <ImportExportView title={appearance.title} />}
         </div>
       )}
       </div>
     </div>
   );
+}
+
+// A #json or #csv hash shows the raw export instead of the app, so none of the
+// app's hooks run in that tab.
+export default function Page() {
+  const rawFormat = useRawFormat();
+  if (rawFormat) return <RawExportView format={rawFormat} />;
+  return <Home />;
 }
