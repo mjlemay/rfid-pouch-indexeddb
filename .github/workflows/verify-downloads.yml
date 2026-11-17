@@ -1,0 +1,23 @@
+name: Verify Download Link
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for the assets to settle
+        run: sleep 30
+
+      - name: Request the latest zip
+        run: |
+          URL="https://github.com/mjlemay/rfid-pouch-indexeddb/releases/latest/download/simple-rfid-notekeeper.zip"
+          if curl -f -L -I "$URL" > /dev/null 2>&1; then
+            echo "The latest zip link works."
+          else
+            echo "::error::The latest zip link failed: $URL"
+            exit 1
+          fi
