@@ -34,12 +34,12 @@
 - Create: `scripts/package.sh`
 - Modify: `package.json`, `.gitignore`
 
-- [ ] **Step 1: Run the script before it exists to see the failure**
+- [x] **Step 1: Run the script before it exists to see the failure**
 
 Run: `npm run package`
 Expected: `Missing script: "package"`.
 
-- [ ] **Step 2: Write the script**
+- [x] **Step 2: Write the script**
 
 ```bash
 #!/usr/bin/env bash
@@ -71,7 +71,7 @@ echo "release/$NAME.zip"
 
 Run: `chmod +x scripts/package.sh`
 
-- [ ] **Step 3: Wire the script and ignore the output**
+- [x] **Step 3: Wire the script and ignore the output**
 
 In `package.json` scripts, after `"build": "next build",` add:
 
@@ -81,7 +81,7 @@ In `package.json` scripts, after `"build": "next build",` add:
 
 In `.gitignore`, after the `out` line under the Next.js comment, add `release`.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm run build && npm run package && unzip -l release/simple-rfid-notekeeper.zip | head -8 && ls release`
 Expected: the listing starts with `simple-rfid-notekeeper/` and includes `simple-rfid-notekeeper/index.html`; `ls release` shows the folder and both zips. `git status --short` does not list `release/`.
@@ -89,7 +89,7 @@ Expected: the listing starts with `simple-rfid-notekeeper/` and includes `simple
 Run: `rm -rf out && npm run package; echo "exit $?"`
 Expected: the missing-build message and exit 1. Then `npm run build` again.
 
-- [ ] **Step 5: Propose commit**
+- [x] **Step 5: Propose commit**
 
 `Add a packaging script that zips the static build`
 
@@ -100,7 +100,7 @@ Expected: the missing-build message and exit 1. Then `npm run build` again.
 **Files:**
 - Create: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Write the workflow**
+- [x] **Step 1: Write the workflow**
 
 ```yaml
 name: Checks
@@ -138,12 +138,12 @@ jobs:
         run: npm run build
 ```
 
-- [ ] **Step 2: Verify the YAML parses**
+- [x] **Step 2: Verify the YAML parses**
 
 Run: `node -e "require('js-yaml').load(require('fs').readFileSync('.github/workflows/ci.yml','utf8')); console.log('ci.yml ok')"`
 Expected: `ci.yml ok`.
 
-- [ ] **Step 3: Propose commit**
+- [x] **Step 3: Propose commit**
 
 `Run tests, type check, lint, and build on pull requests`
 
@@ -154,7 +154,7 @@ Expected: `ci.yml ok`.
 **Files:**
 - Create: `.github/workflows/release.yml`
 
-- [ ] **Step 1: Write the workflow**
+- [x] **Step 1: Write the workflow**
 
 ```yaml
 name: Release
@@ -250,12 +250,12 @@ jobs:
           generate_release_notes: true
 ```
 
-- [ ] **Step 2: Verify the YAML parses**
+- [x] **Step 2: Verify the YAML parses**
 
 Run: `node -e "require('js-yaml').load(require('fs').readFileSync('.github/workflows/release.yml','utf8')); console.log('release.yml ok')"`
 Expected: `release.yml ok`.
 
-- [ ] **Step 3: Propose commit**
+- [x] **Step 3: Propose commit**
 
 `Publish a GitHub Release with the zip when the version changes`
 
@@ -266,7 +266,7 @@ Expected: `release.yml ok`.
 **Files:**
 - Create: `.github/workflows/verify-downloads.yml`
 
-- [ ] **Step 1: Write the workflow**
+- [x] **Step 1: Write the workflow**
 
 ```yaml
 name: Verify Download Link
@@ -294,12 +294,12 @@ jobs:
           fi
 ```
 
-- [ ] **Step 2: Verify the YAML parses**
+- [x] **Step 2: Verify the YAML parses**
 
 Run: `node -e "require('js-yaml').load(require('fs').readFileSync('.github/workflows/verify-downloads.yml','utf8')); console.log('verify-downloads.yml ok')"`
 Expected: `verify-downloads.yml ok`.
 
-- [ ] **Step 3: Propose commit**
+- [x] **Step 3: Propose commit**
 
 `Check the latest zip link after each release`
 
@@ -310,7 +310,7 @@ Expected: `verify-downloads.yml ok`.
 **Files:**
 - Create: `docs/index.html`, `docs/.nojekyll`
 
-- [ ] **Step 1: Write the page**
+- [x] **Step 1: Write the page**
 
 ```html
 <!doctype html>
@@ -423,11 +423,11 @@ Expected: `verify-downloads.yml ok`.
 
 Run: `touch docs/.nojekyll`
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `open docs/index.html` and check the text, the button link, and that narrowing the window to phone width shows no horizontal scroll.
 
-- [ ] **Step 3: Propose commit**
+- [x] **Step 3: Propose commit**
 
 `Add the landing page for GitHub Pages`
 
@@ -439,7 +439,7 @@ Run: `open docs/index.html` and check the text, the button link, and that narrow
 - Modify: `public/DIRECTIONS.md`, `README.md`
 - Modify: `docs/superpowers/plans/2026-11-17-release-and-site.md` (tick boxes)
 
-- [ ] **Step 1: Rewrite the directions shipped in the zip**
+- [x] **Step 1: Rewrite the directions shipped in the zip**
 
 Replace `public/DIRECTIONS.md` with:
 
@@ -456,7 +456,7 @@ Open `index.html` in this folder in Chrome or Edge. Plug in your USB RFID reader
 - If the reader stops being picked up, refresh the page.
 ```
 
-- [ ] **Step 2: README Releases section**
+- [x] **Step 2: README Releases section**
 
 Before the `## Reminders` heading in `README.md`, add:
 
@@ -469,12 +469,12 @@ The landing page at https://mjlemay.github.io/rfid-pouch-indexeddb/ always links
 
 ```
 
-- [ ] **Step 3: Full verification**
+- [x] **Step 3: Full verification**
 
 Run: `npx vitest run && npx tsc --noEmit && npm run lint && npm run build && npm run package && for f in .github/workflows/*.yml; do node -e "require('js-yaml').load(require('fs').readFileSync('$f','utf8')); console.log('$f ok')"; done`
 Expected: all green, both zips listed, three `ok` lines. Then `unzip -l release/simple-rfid-notekeeper.zip | grep DIRECTIONS` shows the directions file inside the folder.
 
-- [ ] **Step 4: Propose commit**
+- [x] **Step 4: Propose commit**
 
 `Describe releases in the README and refresh the shipped directions`
 

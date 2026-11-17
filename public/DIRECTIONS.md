@@ -1,13 +1,10 @@
-## Getting Started with ALPHA Build
+# The Simple RFID Notekeeper
 
-Open `index.html` in your browser of choice. Plug in your usb RFID serial reader of choice and you should be good to go to create scan logs and add notes to each scanned item.
-
+Open `index.html` in this folder in Chrome or Edge. Plug in your USB RFID reader and scan a tag to create a record and add notes to it.
 
 ## Reminders
 
-- As the data is stored via the browser, make sure you use the same browser each time!
-- This DOES NOT save to the RFID item, but to a database within your browser.
-- If it stops working, refresh the page.
-- WARNING: IF you clear your browser history, you make DELETE ALL YOUR DATA!
-
-
+- The data is stored in the browser, so use the same browser on the same machine each time.
+- Nothing is written to the RFID tag itself, only to a database inside your browser.
+- Clearing the browser's site data deletes everything. Use Import and Export inside the app to keep a copy.
+- If the reader stops being picked up, refresh the page.
