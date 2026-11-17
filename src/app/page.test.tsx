@@ -148,3 +148,25 @@ describe('Import end to end', () => {
     expect(screen.getByText('b2')).toBeTruthy();
   });
 });
+
+describe('Raw export by hash', () => {
+  let db: PouchDB.Database;
+
+  beforeEach(async () => {
+    db = makeTestDatabase();
+    await db.put({ _id: 'b2', type: 'record', Notes: 'spare', templateId: '', data: {} });
+    window.location.hash = '#csv';
+  });
+
+  afterEach(async () => {
+    window.history.replaceState(null, '', window.location.pathname);
+    await db.destroy();
+  });
+
+  test('a #csv hash shows only the CSV text', async () => {
+    render(<Home />, { wrapper: withPouch(db) });
+    const pre = await screen.findByText(/^ID,Template,Notes/);
+    expect(pre.textContent).toBe('ID,Template,Notes\r\nb2,,spare\r\n');
+    expect(document.querySelector('.bg-sidebar')).toBeNull();
+  });
+});

@@ -32,7 +32,7 @@
 - Create: `src/app/hooks/useRawFormat.tsx`
 - Test: `src/app/hooks/useRawFormat.test.tsx`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```tsx
 // @vitest-environment jsdom
@@ -73,12 +73,12 @@ describe('useRawFormat', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run src/app/hooks/useRawFormat.test.tsx`
 Expected: FAIL, cannot find module `./useRawFormat`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```tsx
 import { useSyncExternalStore } from 'react';
@@ -111,12 +111,12 @@ export function useRawFormat(): ExportFormat | null {
 }
 ```
 
-- [ ] **Step 4: Run to verify pass**
+- [x] **Step 4: Run to verify pass**
 
 Run: `npx vitest run src/app/hooks/useRawFormat.test.tsx`
 Expected: 4 passed.
 
-- [ ] **Step 5: Propose commit**
+- [x] **Step 5: Propose commit**
 
 `Add a hook that reads the raw export format from the URL hash`
 
@@ -128,7 +128,7 @@ Expected: 4 passed.
 - Create: `src/app/components/rawExportView.tsx`
 - Test: `src/app/components/rawExportView.test.tsx`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```tsx
 // @vitest-environment jsdom
@@ -179,12 +179,12 @@ describe('RawExportView', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run src/app/components/rawExportView.test.tsx`
 Expected: FAIL, cannot find module `./rawExportView`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```tsx
 import React, { JSX, useEffect, useMemo } from 'react';
@@ -229,12 +229,12 @@ export default function RawExportView({ format }: RawExportViewProps): JSX.Eleme
 }
 ```
 
-- [ ] **Step 4: Run to verify pass**
+- [x] **Step 4: Run to verify pass**
 
 Run: `npx vitest run src/app/components/rawExportView.test.tsx`
 Expected: 3 passed.
 
-- [ ] **Step 5: Propose commit**
+- [x] **Step 5: Propose commit**
 
 `Add the raw export view`
 
@@ -246,7 +246,7 @@ Expected: 3 passed.
 - Modify: `src/app/components/importExportView.tsx`
 - Test: `src/app/components/importExportView.test.tsx`
 
-- [ ] **Step 1: Write the failing test** (append inside the `describe`)
+- [x] **Step 1: Write the failing test** (append inside the `describe`)
 
 ```tsx
   test('links to the raw JSON and CSV views in a new tab', async () => {
@@ -259,12 +259,12 @@ Expected: 3 passed.
   });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run src/app/components/importExportView.test.tsx`
 Expected: FAIL, unable to find role link with name `#json`.
 
-- [ ] **Step 3: Implement** (after the Import `</section>`, before `{children}`)
+- [x] **Step 3: Implement** (after the Import `</section>`, before `{children}`)
 
 ```tsx
       <p className="text-lg opacity-70">
@@ -278,12 +278,12 @@ Expected: FAIL, unable to find role link with name `#json`.
       </p>
 ```
 
-- [ ] **Step 4: Run to verify pass**
+- [x] **Step 4: Run to verify pass**
 
 Run: `npx vitest run src/app/components/importExportView.test.tsx`
 Expected: 5 passed.
 
-- [ ] **Step 5: Propose commit**
+- [x] **Step 5: Propose commit**
 
 `Link to the raw JSON and CSV views from the Import and Export page`
 
@@ -295,7 +295,7 @@ Expected: 5 passed.
 - Modify: `src/app/page.tsx`
 - Test: `src/app/page.test.tsx`
 
-- [ ] **Step 1: Write the failing test** (append at the end of the file)
+- [x] **Step 1: Write the failing test** (append at the end of the file)
 
 ```tsx
 describe('Raw export by hash', () => {
@@ -321,12 +321,12 @@ describe('Raw export by hash', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `npx vitest run src/app/page.test.tsx`
 Expected: the new test FAILS, unable to find text matching `ID,Template,Notes`; existing tests still pass.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `src/app/page.tsx` add the imports:
 
@@ -347,12 +347,12 @@ export default function Page() {
 }
 ```
 
-- [ ] **Step 4: Run to verify pass**
+- [x] **Step 4: Run to verify pass**
 
 Run: `npx vitest run src/app/page.test.tsx`
 Expected: all passed, including the new test.
 
-- [ ] **Step 5: Propose commit**
+- [x] **Step 5: Propose commit**
 
 `Show the raw export when the page loads with a #json or #csv hash`
 
@@ -364,12 +364,12 @@ Expected: all passed, including the new test.
 - Modify: `README.md`
 - Modify: `docs/superpowers/plans/2026-11-17-raw-export-links.md` (tick boxes)
 
-- [ ] **Step 1: Full verification**
+- [x] **Step 1: Full verification**
 
 Run: `npx vitest run && npx tsc --noEmit && npm run lint && npm run build`
 Expected: all tests pass, no type errors, no lint errors, static export succeeds.
 
-- [ ] **Step 2: README**
+- [x] **Step 2: README**
 
 After the existing Import and Export line, add:
 
@@ -381,6 +381,6 @@ The `#json` and `#csv` links at the bottom of that page open the same records as
 
 Open the Import and Export page, click `#json` and `#csv`, confirm each opens a new tab with only the text and that the tab title is the export file name.
 
-- [ ] **Step 4: Propose commit**
+- [x] **Step 4: Propose commit**
 
 `Document the raw export links`
